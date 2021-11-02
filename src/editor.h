@@ -18,6 +18,7 @@ typedef struct Editor {
 
 	bool shows_message; ///< This is true, if the editor shows a message.
 	bool quit; ///< True, if the user wants the editor to quit.
+
 	Buffer *current_buffer; ///< The current buffer. This is a circular doubly-linked list.
 } Editor;
 
