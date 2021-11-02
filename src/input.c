@@ -8,9 +8,7 @@
 
 #include "utf8.h"
 #include "input.h"
-#include "static.h"
 
-STATIC KeyCode check_input(char *input);
 
 // Different terminal produce diffent sequences.
 // Sequences:
@@ -49,8 +47,8 @@ STATIC KeyCode check_input(char *input);
 // ESCOQ  -- F2
 // ESCOR  -- F3
 // ESCOS  -- F4
-STATIC KeyCode
-check_input(char *input) {
+KeyCode
+input_check(char *input) {
 	if (input[0] == KEY_ESCAPE) {
 		// We have ESC
 		if (input[1] == '\0') {
@@ -155,5 +153,5 @@ input_get(char *input) {
 			exit(-1); // TODO
 		}
 	}
-	return check_input(input);
+	return input_check(input);
 }

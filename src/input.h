@@ -107,6 +107,7 @@ typedef enum {
 	KEY_VALID,
 } KeyCode;
 
+KeyCode input_check(char *input);
 KeyCode input_get(char *input);
 
 #endif
