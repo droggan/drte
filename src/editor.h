@@ -5,6 +5,7 @@
 /// \file
 /// editor.h defines the editor structure.
 
+#define MACRO_BUFFER_SIZE 32768
 
 /// The editor structure.
 typedef struct Editor {
@@ -15,6 +16,10 @@ typedef struct Editor {
 	Window messagebar_win; ///< The window for the messagebar.
 
 	char *string_arg; ///< This is used to pass strings to functions.
+
+	char macro_buffer[MACRO_BUFFER_SIZE]; ///< This buffer contains the current keyboard macro.
+	size_t macro_bytes_written; ///< The number of bytes written to macro_buffer.
+	bool recording_macro; ///< True, if the editor is recording a macro.
 
 	bool shows_message; ///< This is true, if the editor shows a message.
 	bool quit; ///< True, if the user wants the editor to quit.

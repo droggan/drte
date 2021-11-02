@@ -66,5 +66,11 @@ editor_loop(Editor *e) {
 		} else {
 			editor_show_message(e, "Unrecognized input");
 		}
+
+		if (e->recording_macro && e->current_buffer->prev_func != macro_start_stop) {
+			e->string_arg = input;
+			macro_append(e);
+		}
+
 	}
 }

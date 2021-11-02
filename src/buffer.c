@@ -86,6 +86,8 @@ buffer_new(Editor *e, char *filename) {
 	buf->funcs[KEY_F3] = uf_openfile;
 	buf->funcs[KEY_F4] = uf_previous_buffer;
 	buf->funcs[KEY_F5] = uf_next_buffer;
+	buf->funcs[KEY_F6] = uf_macro_start_stop;
+	buf->funcs[KEY_F7] = uf_macro_play;
 	buf->funcs[KEY_F8] = uf_close_buffer;
 	buf->funcs[KEY_F10] = uf_quit;
 

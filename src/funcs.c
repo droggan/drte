@@ -267,6 +267,64 @@ page_down(Editor *e) {
 }
 
 void
+macro_start_stop(Editor *e) {
+	if (e->recording_macro) {
+		editor_show_message(e, "Stopped recording");
+		e->recording_macro = false;
+		e->macro_buffer[e->macro_bytes_written] = '\0';
+	} else {
+		editor_show_message(e, "Recording");
+		e->recording_macro = true;
+		e->macro_bytes_written = 0;
+		e->macro_buffer[0] = '\0';
+	}
+}
+
+void
+macro_append(Editor *e) {
+	size_t len = strlen(e->string_arg);
+
+	strcpy(e->macro_buffer + e->macro_bytes_written, e->string_arg);
+	e->macro_buffer[e->macro_bytes_written + len] = '\0';
+	e->macro_bytes_written += len + 1;
+
+	if (e->macro_bytes_written > MACRO_BUFFER_SIZE - 32) {
+		editor_show_message(e, "Macro buffer full. Stopped recording.");
+		e->recording_macro = false;
+	}
+}
+
+void
+macro_play(Editor *e) {
+	size_t i = 0;
+
+	editor_show_message(e, "playing macro");
+
+	while (e->macro_buffer[i] != '\0') {
+		char buffer[32] = {'\0'};
+		KeyCode c;
+
+		strcpy(buffer, e->macro_buffer + i);
+		c = input_check(buffer);
+
+		if (c >= KEY_SPECIAL_MIN && c <= KEY_SPECIAL_MAX) {
+			Func f = e->current_buffer->funcs[c].func;
+			if (f != NULL) {
+				f(e);
+				e->current_buffer->prev_func = f;
+			}
+		} else if (c == KEY_VALID) {
+			e->string_arg = buffer;
+			insert(e);
+			e->current_buffer->prev_func = insert;
+		} else {
+			editor_show_message(e, "Unrecognized input");
+		}
+		i += strlen(buffer) + 1;
+	}
+}
+
+void
 next_buffer(Editor *e) {
 	e->current_buffer = e->current_buffer->next;
 	e->current_buffer->redraw = 1;

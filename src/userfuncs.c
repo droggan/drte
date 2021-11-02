@@ -86,6 +86,20 @@ UserFunc uf_page_down = {
 	.func = page_down
 };
 
+UserFunc uf_macro_start_stop = {
+	.type = USER_FUNC_MANAGEMENT,
+	.name = "macro_start_stop",
+	.description = "Start or stop recording a macro.",
+	.func = macro_start_stop
+};
+
+UserFunc uf_macro_play = {
+	.type = USER_FUNC_MANAGEMENT,
+	.name = "macro_play",
+	.description = "Play a previously recorded macro.",
+	.func = macro_play
+};
+
 UserFunc uf_next_buffer = {
 	.type = USER_FUNC_MANAGEMENT,
 	.name = "next_buffer",
