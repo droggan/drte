@@ -60,7 +60,7 @@ editor_loop(Editor *e) {
 				e->current_buffer->prev_func = f;
 			}
 		} else if (c == KEY_VALID) {
-			e->current_buffer->string_arg = input;
+			e->string_arg = input;
 			insert(e);
 			e->current_buffer->prev_func = insert;
 		} else {

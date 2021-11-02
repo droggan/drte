@@ -21,8 +21,6 @@ typedef struct Buffer {
 	char *prompt; ///< The prompt shown in menus.
 	size_t target_column; ///< Used by up/down to find the correnct column.
 
-	char *string_arg; ///< This is used to pass strings to functions.
-
 	///< This struct saves the current position.
 	struct {
 		size_t offset; ///< The current position as offset in bytes.

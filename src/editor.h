@@ -14,6 +14,8 @@ typedef struct Editor {
 	Window statusbar_win; ///< The window for the statusbar.
 	Window messagebar_win; ///< The window for the messagebar.
 
+	char *string_arg; ///< This is used to pass strings to functions.
+
 	bool shows_message; ///< This is true, if the editor shows a message.
 	bool quit; ///< True, if the user wants the editor to quit.
 	Buffer *current_buffer; ///< The current buffer. This is a circular doubly-linked list.

@@ -23,7 +23,7 @@ static int scroll_down(Buffer *buf);
 void
 insert(Editor *e) {
 	Buffer *b = e->current_buffer;
-	gbf_insert(b->gbuf, b->string_arg, b->position.offset);
+	gbf_insert(b->gbuf, e->string_arg, b->position.offset);
 	right(e);
 	b->has_changed = true;
 	b->redraw = true;
