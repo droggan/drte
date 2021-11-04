@@ -86,6 +86,20 @@ UserFunc uf_page_down = {
 	.func = page_down
 };
 
+UserFunc uf_region_start_stop = {
+	.type = USER_FUNC_MANAGEMENT,
+	.name = "region_start_stop",
+	.description = "Start or stop selecting text.",
+	.func = region_start_stop
+};
+
+UserFunc uf_region_off = {
+	.type = USER_FUNC_MANAGEMENT,
+	.name = "region_off",
+	.description = "Clear the current region.",
+	.func = region_off
+};
+
 UserFunc uf_macro_start_stop = {
 	.type = USER_FUNC_MANAGEMENT,
 	.name = "macro_start_stop",

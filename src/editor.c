@@ -67,10 +67,32 @@ editor_loop(Editor *e) {
 			editor_show_message(e, "Unrecognized input");
 		}
 
-		if (e->recording_macro && e->current_buffer->prev_func != macro_start_stop) {
+		Buffer *b = e->current_buffer;
+
+		if (e->recording_macro && b->prev_func != macro_start_stop) {
 			e->string_arg = input;
 			macro_append(e);
 		}
 
+		if (b->region_type == REGION_FLUID) {
+			if (b->region_direction == REGION_DIRECTION_NONE) {
+				if (b->position.offset > b->region_start) {
+					b->region_direction = REGION_DIRECTION_RIGHT;
+				} else if (b->position.offset < b->region_start) {
+					b->region_direction = REGION_DIRECTION_LEFT;
+				}
+			}
+			if (b->region_direction == REGION_DIRECTION_RIGHT) {
+				b->region_end = b->position.offset;
+			} else if (b->region_direction == REGION_DIRECTION_LEFT) {
+				b->region_start = b->position.offset;
+			}
+			if (b->region_direction != REGION_DIRECTION_NONE) {
+				if (b->region_start == b->region_end) {
+					b->region_direction = REGION_DIRECTION_NONE;
+				}
+			}
+			b->redraw = true;
+		}
 	}
 }

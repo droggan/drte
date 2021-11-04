@@ -51,9 +51,10 @@ buffer_new(Editor *e, char *filename) {
 	buf->next = buf;
 	buf->prev = buf;
 
+	buf->funcs[KEY_CTRL_SPACE] = uf_region_start_stop;
 	buf->funcs[KEY_CTRL_A] = uf_bol;
 	buf->funcs[KEY_CTRL_B] = uf_left;
-	buf->funcs[KEY_CTRL_C] = uf_quit;
+	buf->funcs[KEY_CTRL_C] = uf_region_off;
 
 	buf->funcs[KEY_CTRL_D] = uf_delete;
 	buf->funcs[KEY_CTRL_E] = uf_eol;
@@ -207,6 +208,10 @@ buffer_draw_func(Editor *e) {
 			char current_char = gbf_at(b->gbuf, current);
 			char cp[5] = {0};
 
+			if (b->region_type != REGION_OFF && current >= b->region_start && current < b->region_end) {
+				display_set_color(INVERSE);
+			}
+
 			if ((column >= first_column) && (column <= first_column + columns)) {
 				// column is visible
 				if (utf8_is_whitespace(current_char)) {
@@ -246,6 +251,10 @@ buffer_draw_func(Editor *e) {
 				column += utf8_draw_width(current_char);
 			}
 			current += utf8_byte_size(current_char);
+			if (b->region_type != REGION_OFF && current == b->region_end) {
+						display_set_color(OFF);
+			}
+
 		}
 		b->redraw = 0;
 	}

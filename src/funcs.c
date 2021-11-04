@@ -18,6 +18,7 @@
 
 static int scroll_up(Buffer *buf);
 static int scroll_down(Buffer *buf);
+static size_t region_size(Buffer *b);
 
 
 void
@@ -264,6 +265,52 @@ page_down(Editor *e) {
 	b->position.column = 1;
 	b->cursor.line = 0;
 	b->cursor.column = 0;
+}
+
+void
+region_start_stop(Editor *e) {
+	Buffer *b = e->current_buffer;
+	if (b->region_type == REGION_OFF) {
+		editor_show_message(e, "Region active.");
+		b->region_start = b->position.offset;
+		b->region_end = b->position.offset;
+		b->region_type = REGION_FLUID;
+	} else if (b->region_type == REGION_FLUID) {
+		if (b->region_start == b->region_end) {
+			editor_show_message(e, "Region off.");
+			b->region_type = REGION_OFF;
+		} else {
+			b->region_end = b->position.offset;
+			b->region_type = REGION_ON;
+			editor_show_message(e, "Region set.");
+		}
+	} else if (b->region_type == REGION_ON) {
+		region_off(e);
+		editor_show_message(e, "Region active.");
+		b->region_start = b->position.offset;
+		b->region_end = b->position.offset;
+		b->region_type = REGION_FLUID;
+	}
+}
+
+void
+region_off(Editor *e) {
+	Buffer *b = e->current_buffer;
+
+	if (b->region_type == REGION_OFF) {
+		return;
+	}
+	b->region_type = REGION_OFF;
+	b->region_direction = REGION_DIRECTION_NONE;
+	b->region_start = 0;
+	b->region_end = 0;
+	b->redraw = true;
+	editor_show_message(e, "Cleared region.");
+}
+
+static size_t
+region_size(Buffer *b) {
+	return b->region_end - b->region_start;
 }
 
 void

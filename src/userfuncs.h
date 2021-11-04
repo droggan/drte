@@ -32,6 +32,8 @@ extern UserFunc uf_bol;
 extern UserFunc uf_eol;
 extern UserFunc uf_page_up;
 extern UserFunc uf_page_down;
+extern UserFunc uf_region_start_stop;
+extern UserFunc uf_region_off;
 extern UserFunc uf_macro_start_stop;
 extern UserFunc uf_macro_play;
 extern UserFunc uf_next_buffer;

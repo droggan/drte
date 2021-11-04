@@ -17,6 +17,8 @@ void eol(struct Editor *e);
 void bol(struct Editor *e);
 void page_up(struct Editor *e);
 void page_down(struct Editor *e);
+void region_start_stop(struct Editor *e);
+void region_off(struct Editor *e);
 void macro_start_stop(struct Editor *e);
 void macro_append(struct Editor *e);
 void macro_play(struct Editor *e);
