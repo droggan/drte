@@ -44,6 +44,7 @@ main(int argc, char **argv) {
 		fprintf(stderr, "Out of memory\n");
 		exit(-1);
 	}
+	memset(e, 0, sizeof(*e));
 
 	e->current_buffer = NULL;
 	signal(SIGCONT, sigcont_handler);
