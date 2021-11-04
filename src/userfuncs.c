@@ -100,6 +100,27 @@ UserFunc uf_region_off = {
 	.func = region_off
 };
 
+UserFunc uf_copy = {
+	.type = USER_FUNC_MANAGEMENT,
+	.name = "copy",
+	.description = "Copy the selected text.",
+	.func = copy
+};
+
+UserFunc uf_cut = {
+	.type = USER_FUNC_DELETION,
+	.name = "cut",
+	.description = "Cut the selected text.",
+	.func = cut
+};
+
+UserFunc uf_paste = {
+	.type = USER_FUNC_INSERTION,
+	.name = "paste",
+	.description = "Paste previously cut/copied text.",
+	.func = paste
+};
+
 UserFunc uf_macro_start_stop = {
 	.type = USER_FUNC_MANAGEMENT,
 	.name = "macro_start_stop",

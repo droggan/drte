@@ -21,6 +21,10 @@ typedef struct Editor {
 	size_t macro_bytes_written; ///< The number of bytes written to macro_buffer.
 	bool recording_macro; ///< True, if the editor is recording a macro.
 
+	char *copy_buffer; ///< A dynamically allocated buffer, containing cut/copied text.
+	size_t copy_buffer_size; ///< The size of the copy buffer.
+	size_t copy_bytes_written; ///< The number of bytes written to copy_buffer.
+
 	bool shows_message; ///< This is true, if the editor shows a message.
 	bool quit; ///< True, if the user wants the editor to quit.
 

@@ -70,9 +70,13 @@ buffer_new(Editor *e, char *filename) {
 	buf->funcs[KEY_CTRL_Q] = uf_resize;
 	buf->funcs[KEY_CTRL_U] = uf_page_up;
 	buf->funcs[KEY_CTRL_V] = uf_page_down;
+	buf->funcs[KEY_CTRL_W] = uf_cut;
 	buf->funcs[KEY_CTRL_X] = uf_save;
 	buf->funcs[KEY_CTRL_Y] = uf_save_as;
 	buf->funcs[KEY_CTRL_Z] = uf_suspend;
+
+	buf->funcs[KEY_ALT_W] = uf_copy;
+	buf->funcs[KEY_ALT_Y] = uf_paste;
 
 	buf->funcs[KEY_RIGHT] = uf_right;
 	buf->funcs[KEY_LEFT] = uf_left;

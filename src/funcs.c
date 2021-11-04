@@ -15,6 +15,7 @@
 #include "menus.h"
 #include "utf8.h"
 
+#define INITIAL_COPY_BUFFER_SIZE 4096
 
 static int scroll_up(Buffer *buf);
 static int scroll_down(Buffer *buf);
@@ -324,6 +325,80 @@ region_off(Editor *e) {
 static size_t
 region_size(Buffer *b) {
 	return b->region_end - b->region_start;
+}
+
+void
+copy(Editor *e) {
+	Buffer *b = e->current_buffer;
+
+	if (region_size(b) == 0) {
+		editor_show_message(e, "No text selected.");
+		return;
+	}
+	size_t len = region_size(b);
+
+	if (e->copy_buffer == NULL) {
+		e->copy_buffer = malloc(INITIAL_COPY_BUFFER_SIZE);
+		if (e->copy_buffer == NULL) {
+			editor_show_message(e, "Copy failed (Out of memory)");
+			e->copy_buffer_size = 0;
+			e->copy_bytes_written = 0;
+			return;
+		}
+		e->copy_buffer_size = INITIAL_COPY_BUFFER_SIZE;
+	}
+	if (e->copy_buffer_size < len + 1) {
+		e->copy_buffer = realloc(e->copy_buffer, len + 1);
+		if (e->copy_buffer == NULL) {
+			editor_show_message(e, "Copy failed (Out of memory)");
+			e->copy_buffer_size = 0;
+			e->copy_bytes_written = 0;
+			return;
+		}
+		e->copy_buffer_size = len + 1;
+	}
+	e->copy_bytes_written = 0;
+	for (size_t i = 0; i < len; i++) {
+		e->copy_buffer[i] = gbf_at(b->gbuf, b->region_start + i);
+		e->copy_bytes_written++;
+	}
+	e->copy_buffer[e->copy_bytes_written] = '\0';
+	editor_show_message(e, "Copied text.");
+}
+
+void
+cut(Editor *e) {
+	Buffer *b = e->current_buffer;
+
+	if (region_size(b) == 0) {
+		editor_show_message(e, "No text selected.");
+		return;
+	}
+
+	copy(e);
+
+	if (e->copy_bytes_written == 0) {
+		return;
+	}
+
+	move_to_offset(e, b->region_start);
+	for (size_t i = 0; i < region_size(b); i++) {
+		delete(e);
+	}
+	region_off(e);
+	editor_show_message(e, "Cut text.");
+}
+
+void
+paste(Editor *e) {
+	Buffer *b = e->current_buffer;
+
+	if (e->copy_bytes_written == 0) {
+		editor_show_message(e, "No text to paste.");
+		return;
+	}
+	gbf_insert(b->gbuf, e->copy_buffer, b->position.offset);
+	b->redraw = true;
 }
 
 void
