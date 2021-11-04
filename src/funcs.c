@@ -18,6 +18,7 @@
 
 static int scroll_up(Buffer *buf);
 static int scroll_down(Buffer *buf);
+static void move_to_offset(Editor *e, size_t offset);
 static size_t region_size(Buffer *b);
 
 
@@ -111,6 +112,18 @@ scroll_down(Buffer *b) {
 
 	return true;
 }
+
+static void
+move_to_offset(Editor *e, size_t offset) {
+	Buffer *b = e->current_buffer;
+	while (b->position.offset > offset) {
+		left(e);
+	}
+	while (b->position.offset < offset) {
+		right(e);
+	}
+}
+
 void
 left(Editor *e) {
 	Buffer *b = e->current_buffer;
