@@ -205,6 +205,7 @@ menu_yes_no(Editor *e, char *prompt) {
 			}
 			free(text);
 		}
+		b->ok = false;
 	}
 
 	e->current_buffer = tmp;
