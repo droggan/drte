@@ -298,8 +298,6 @@ void
 macro_play(Editor *e) {
 	size_t i = 0;
 
-	editor_show_message(e, "playing macro");
-
 	while (e->macro_buffer[i] != '\0') {
 		char buffer[32] = {'\0'};
 		KeyCode c;
