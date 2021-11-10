@@ -17,8 +17,8 @@ devout = "out/devel/"
 devbinname = "drte-dev"
 
 testcc = "clang"
-testcflags = "-O0 -g -std=c99 -Wall -Wextra -DDRTE_TEST -Wno-implicit-function-declaration -fno-omit-frame-pointer -D_POSIX_C_SOURCE"
-testldflags = "-fno-omit-frame-pointer"
+testcflags = "-O0 -g -std=c99 -Wall -Wextra -DDRTE_TEST -Wno-implicit-function-declaration -fno-omit-frame-pointer -fsanitize=address -D_POSIX_C_SOURCE"
+testldflags = "-fno-omit-frame-pointer -fsanitize=address"
 testout = "out/devel/"
 
 source = "src/"
