@@ -56,9 +56,11 @@ main(int argc, char **argv) {
 	resize(e);
 
 	for (int i = 1; i < argc; i++) {
-		size_t len = strlen(argv[i]);
-		char *s = malloc(len + 1);
-		strcpy(s, argv[i]);
+		char *s = strdup(argv[i]);
+		if (s == NULL) {
+			fprintf(stderr, "Out of memory\n");
+			exit(-1);
+		}
 		Buffer *b = buffer_new(e, s);
 		if (b != NULL) {
 			buffer_append(&(e->current_buffer), b);
