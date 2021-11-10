@@ -86,6 +86,27 @@ UserFunc uf_page_down = {
 	.func = page_down
 };
 
+UserFunc uf_isearch = {
+	.type = USER_FUNC_MOVEMENT,
+	.name = "isearch",
+	.description = "Start searching at the current cursor position.",
+	.func = isearch
+};
+
+UserFunc uf_isearch_next = {
+	.type = USER_FUNC_MOVEMENT,
+	.name = "isearch_next",
+	.description = "Go to the next result.",
+	.func = isearch_next
+};
+
+UserFunc uf_isearch_previous = {
+	.type = USER_FUNC_MOVEMENT,
+	.name = "isearch_previous",
+	.description = "Go to the previous result.",
+	.func = isearch_previous
+};
+
 UserFunc uf_region_start_stop = {
 	.type = USER_FUNC_MANAGEMENT,
 	.name = "region_start_stop",

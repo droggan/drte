@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
@@ -208,4 +209,117 @@ gbf_at(GapBuffer  *gbuf, size_t offset) {
 size_t
 gbf_text_length(GapBuffer *gbuf) {
 	return max_offset(gbuf);
+}
+
+STATIC void
+make_lps_table(char *pattern, size_t plen, size_t array[]) {
+	size_t len = 0;
+	size_t i = 1;
+
+	array[0] = 0;
+
+	while (i < plen) {
+		if (pattern[i] == pattern[len]) {
+			array[i] = len + 1;
+			i++;
+			len++;
+		} else {
+			if (len != 0) {
+				len = array[len - 1];
+			} else {
+				array[i] = 0;
+				i++;
+			}
+		}
+	}
+}
+
+bool
+gbf_search(GapBuffer *gbuf, char *pattern, size_t plen, size_t start, size_t *off) {
+	size_t table[plen];
+	size_t ti = start;
+	size_t pi = 0;
+	size_t text_length = gbf_text_length(gbuf);
+
+	make_lps_table(pattern, plen, table);
+
+	while (ti < text_length) {
+		while (gbf_at(gbuf, ti) == pattern[pi]) {
+			ti++;
+			pi++;
+			if (pi == plen) {
+				*off = ti - plen;
+				return true;
+			}
+		}
+		if (pi == 0) {
+			ti++;
+		} else {
+			pi = table[pi - 1];
+		}
+	}
+	return false;
+}
+
+STATIC void
+make_lps_table_reverse(char *pattern, size_t plen, size_t array[]) {
+	size_t last = plen - 1;
+	size_t len = last;
+	size_t i = last - 1;
+
+	array[last] = len;
+
+	while (true) {
+		if (pattern[i] == pattern[len]) {
+			array[i] = len - 1;
+			if (i == 0) {
+				return;
+			}
+			i--;
+			len--;
+		} else {
+			if (len != last) {
+				len = array[len + 1];
+			} else {
+				array[i] = last;
+				if (i == 0) {
+					return;
+				}
+				i--;
+			}
+		}
+	}
+}
+
+bool
+gbf_search_reverse(GapBuffer *gbuf, char *pattern, size_t plen, size_t start, size_t *off) {
+	size_t table[plen];
+	size_t ti = start;
+	size_t last = plen - 1;
+	size_t pi = last;
+
+	make_lps_table_reverse(pattern, plen, table);
+
+	while (true) {
+		while (gbf_at(gbuf, ti) == pattern[pi]) {
+			if (pi == 0) {
+				*off = ti;
+				return true;
+			}
+			if (ti == 0) {
+				return false;
+			}
+			ti--;
+			pi--;
+		}
+		if (pi == last) {
+			if (ti == 0) {
+				return false;
+			}
+			ti--;
+		} else {
+			pi = table[pi + 1];
+		}
+	}
+	return false;
 }

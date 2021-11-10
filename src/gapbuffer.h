@@ -59,8 +59,27 @@ char gbf_at(GapBuffer *gbuf, size_t offset);
 
 /// gbf_text_length returns the length of the text contained in the GapBuffer.
 /// \param gbuf A GapBuffer.
-/// \returns The text length in bytes.
+/// \return The text length in bytes.
 size_t gbf_text_length(GapBuffer *gbuf);
+
+
+/// gbf_search searches for a pattern in the GapBuffer, from left to right.
+/// \param gbuf The GapBuffer to search.
+/// \param pattern The pattern to search for.
+/// \param plen The length of the pattern.
+/// \param start Where to start the search.
+/// \param off This will be set to the start of the match, if any.
+/// \return true on success, false otherwise.
+bool gbf_search(GapBuffer *gbuf, char *pattern, size_t plen, size_t start, size_t *off);
+
+/// gbf_search_reverse searches for a pattern in the GapBuffer, from right to left.
+/// \param gbuf The GapBuffer to search.
+/// \param pattern The pattern to search for.
+/// \param plen The length of the pattern.
+/// \param start Where to start the search.
+/// \param off This will be set to the start of the match, if any.
+/// \return true on success, false otherwise.
+bool gbf_search_reverse(GapBuffer *gbuf, char *pattern, size_t plen, size_t start, size_t *off);
 
 
 #endif

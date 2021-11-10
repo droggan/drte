@@ -16,7 +16,66 @@
 
 
 static void buffer_draw_func(Editor *e);
+static Buffer *make_isearch_buffer(Editor *e);
 
+
+static Buffer *
+make_isearch_buffer(Editor *e) {
+	Buffer *buf = malloc(sizeof(*buf));
+	if (buf == NULL) {
+		editor_show_message(e, "Out of memory");
+		return NULL;
+	}
+
+	memset(buf, 0, sizeof(*buf));
+
+	buf->gbuf = gbf_new();
+	if (buf->gbuf == NULL) {
+		editor_show_message(e, "Out of memory");
+		return NULL;
+	}
+
+	buf->redraw = 1;
+
+	buf->position.line = 1;
+	buf->position.column = 1;
+
+	if (e != NULL) {
+		buf->win = &e->window;
+		buf->statusbar_win = &e->statusbar_win;
+		buf->messagebar_win = &e->messagebar_win;
+	}
+
+	buf->next = buf;
+	buf->prev = buf;
+
+	buf->funcs[KEY_CTRL_A] = uf_bol;
+	buf->funcs[KEY_CTRL_B] = uf_left;
+	buf->funcs[KEY_CTRL_C] = uf_cancel;
+
+	buf->funcs[KEY_CTRL_D] = uf_delete;
+	buf->funcs[KEY_CTRL_E] = uf_eol;
+	buf->funcs[KEY_CTRL_F] = uf_right;
+
+	buf->funcs[KEY_CTRL_H] = uf_backspace;
+	buf->funcs[KEY_CTRL_I] = uf_tab;
+
+	buf->funcs[KEY_CTRL_S] = uf_isearch_next;
+	buf->funcs[KEY_CTRL_R] = uf_isearch_previous;
+	buf->funcs[KEY_CTRL_Z] = uf_suspend;
+
+	buf->funcs[KEY_ALT_Y] = uf_paste;
+
+	buf->funcs[KEY_RIGHT] = uf_right;
+	buf->funcs[KEY_LEFT] = uf_left;
+
+	buf->funcs[KEY_BACKSPACE] = uf_backspace;
+	buf->funcs[KEY_DELETE] = uf_delete;
+	buf->funcs[KEY_RESIZE] = uf_resize;
+
+
+	return buf;
+}
 
 Buffer *
 buffer_new(Editor *e, char *filename) {
@@ -48,6 +107,12 @@ buffer_new(Editor *e, char *filename) {
 		buf->messagebar_win = &e->messagebar_win;
 	}
 
+	buf->isearch_buffer = make_isearch_buffer(e);
+	if (buf->isearch_buffer == NULL) {
+		editor_show_message(e, "Out of memory");
+		return NULL;
+	}
+
 	buf->next = buf;
 	buf->prev = buf;
 
@@ -68,6 +133,7 @@ buffer_new(Editor *e, char *filename) {
 	buf->funcs[KEY_CTRL_O] = uf_openfile;
 	buf->funcs[KEY_CTRL_P] = uf_up;
 	buf->funcs[KEY_CTRL_Q] = uf_resize;
+	buf->funcs[KEY_CTRL_S] = uf_isearch;
 	buf->funcs[KEY_CTRL_U] = uf_page_up;
 	buf->funcs[KEY_CTRL_V] = uf_page_down;
 	buf->funcs[KEY_CTRL_W] = uf_cut;
@@ -145,6 +211,10 @@ buffer_free(Buffer **buf) {
 		if ((*buf)->filename != NULL) {
 			free((*buf)->filename);
 		}
+		if ((*buf)->isearch_buffer != NULL) {
+			buffer_free(&(*buf)->isearch_buffer);
+		}
+
 		free(*buf);
 		*buf = NULL;
 	} else {
@@ -158,6 +228,9 @@ buffer_free(Buffer **buf) {
 		gbf_free(&current->gbuf);
 		if (current->filename != NULL) {
 			free(current->filename);
+		}
+		if (current->isearch_buffer != NULL) {
+			buffer_free(&current->isearch_buffer);
 		}
 		free(current);
 
@@ -181,18 +254,36 @@ buffer_append(Buffer **current, Buffer *new) {
 static void
 buffer_draw_func(Editor *e) {
 	Buffer *b = e->current_buffer;
+	Buffer *ib = e->current_buffer->isearch_buffer;
 	size_t current = b->first_visible_char;
 	size_t end = gbf_text_length(b->gbuf);
 	size_t lines = b->win->size.lines;
 	size_t columns = b->win->size.columns;
 	size_t line = 0;
 	size_t column = 0;
+	size_t pcol = 0;
 	int last_whitespace = 0;
 	static size_t first_column = 0;
 
 	e->current_buffer->draw_statusbar(e);
 	if (e->shows_message) {
 		e->shows_message = false;
+	} else if (ib->isearch_is_active) {
+		char *text = gbf_text(ib->gbuf);
+
+		display_clear_line(*b->messagebar_win, 0);
+		if (!ib->isearch_has_match) {
+			pcol = display_show_string(e->messagebar_win, 0, pcol, "Failing ");
+		}
+		if (ib->isearch_has_wrapped) {
+			pcol = display_show_string(e->messagebar_win, 0, pcol, "Wrapped ");
+		}
+		if (ib->isearch_direction == ISEARCH_DIRECTION_BACKWARD) {
+			pcol = display_show_string(e->messagebar_win, 0, pcol, "Reverse ");
+		}
+		pcol = display_show_string(e->messagebar_win, 0, pcol, "ISeach: ");
+		pcol = display_show_string(e->messagebar_win, 0, pcol, text);
+		free(text);
 	} else {
 		display_clear_window(e->messagebar_win);
 	}
@@ -215,7 +306,11 @@ buffer_draw_func(Editor *e) {
 			if (b->region_type != REGION_OFF && current >= b->region_start && current < b->region_end) {
 				display_set_color(INVERSE);
 			}
-
+			if (ib->isearch_has_match && current >= ib->isearch_match_start &&
+				current < ib->isearch_match_end) {
+				display_set_color(FOREGROUND_BLACK);
+				display_set_color(BACKGROUND_GREEN);
+			}
 			if ((column >= first_column) && (column <= first_column + columns)) {
 				// column is visible
 				if (utf8_is_whitespace(current_char)) {
@@ -258,13 +353,23 @@ buffer_draw_func(Editor *e) {
 			if (b->region_type != REGION_OFF && current == b->region_end) {
 						display_set_color(OFF);
 			}
+			if (ib->isearch_has_match && current ==  ib->isearch_match_end) {
+				display_set_color(OFF);
+			}
 
 		}
 		b->redraw = 0;
 	}
-	display_move_cursor(*e->current_buffer->win,
-						e->current_buffer->cursor.line,
-						e->current_buffer->cursor.column - first_column);
+	if (ib->isearch_is_active) {
+		display_move_cursor(*b->messagebar_win,
+							ib->cursor.line,
+							pcol);
+
+	} else {
+		display_move_cursor(*b->win,
+							b->cursor.line,
+							b->cursor.column - first_column);
+	}
 	display_refresh();
 
 }

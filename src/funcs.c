@@ -14,6 +14,7 @@
 #include "editor.h"
 #include "menus.h"
 #include "utf8.h"
+#include "search.h"
 
 #define INITIAL_COPY_BUFFER_SIZE 4096
 
@@ -279,6 +280,94 @@ page_down(Editor *e) {
 	b->position.column = 1;
 	b->cursor.line = 0;
 	b->cursor.column = 0;
+}
+
+void
+isearch(Editor *e) {
+	Buffer *ib = e->current_buffer->isearch_buffer;
+	Buffer *tb = e->current_buffer;
+
+
+	ib->isearch_start = tb->position.offset;
+	ib->isearch_is_active = true;
+	ib->isearch_has_match = true;
+	ib->isearch_direction = ISEARCH_DIRECTION_FORWARD;
+	ib->isearch_start = tb->position.offset;
+	e->size_t_arg = gbf_text_length(tb->gbuf);
+
+	while (!ib->cancel) {
+		e->current_buffer = tb;
+		e->current_buffer->draw(e);
+		e->current_buffer = ib;
+
+		editor_loop_once(e);
+
+		size_t len = gbf_text_length(ib->gbuf);
+
+		if (len != 0) {
+			char *s = gbf_text(ib->gbuf);
+			size_t off = 0;
+
+			if (ib->isearch_direction == ISEARCH_DIRECTION_FORWARD) {
+				ib->isearch_has_match = gbf_search(tb->gbuf, s, len, ib->isearch_start, &off);
+			} else if (ib->isearch_direction == ISEARCH_DIRECTION_BACKWARD) {
+				ib->isearch_has_match = gbf_search_reverse(tb->gbuf, s, len, ib->isearch_start, &off);
+			}
+			if (ib->isearch_has_match) {
+				ib->isearch_match_start = off;
+				ib->isearch_match_end = off + len;
+			}
+			e->current_buffer = tb;
+			e->current_buffer->redraw = true;
+			if (ib->isearch_has_match) {
+				move_to_offset(e, off);
+			}
+			e->current_buffer = ib;
+			free(s);
+		}
+	}
+	ib->isearch_is_active = false;
+	ib->isearch_has_match = false;
+	ib->isearch_has_wrapped = false;
+	ib->cancel = false;
+	e->current_buffer = tb;
+}
+
+void
+isearch_next(Editor *e){
+	Buffer *b = e->current_buffer;
+
+	if (gbf_text_length(b->gbuf) == 0){
+		return;
+	} else if (b->isearch_has_match) {
+		b->isearch_start = b->isearch_match_start + 1;
+		b->isearch_direction = ISEARCH_DIRECTION_FORWARD;
+	} else if (!b->isearch_has_match && b->isearch_direction == ISEARCH_DIRECTION_FORWARD) {
+		b->isearch_start = 0;
+		b->isearch_has_wrapped = true;
+	} else {
+		b->isearch_direction = ISEARCH_DIRECTION_FORWARD;
+	}
+}
+
+void
+isearch_previous(Editor *e) {
+	Buffer *b = e->current_buffer;
+
+	if (gbf_text_length(b->gbuf) == 0){
+		return;
+	} else if (b->isearch_has_match) {
+		b->isearch_start = b->isearch_match_start - 1;
+		b->isearch_direction = ISEARCH_DIRECTION_BACKWARD;
+	} else if (!b->isearch_has_match && b->isearch_direction == ISEARCH_DIRECTION_BACKWARD) {
+		b->isearch_start = e->size_t_arg;
+		b->isearch_has_wrapped = true;
+	} else if (!b->isearch_has_match && b->isearch_direction == ISEARCH_DIRECTION_FORWARD) {
+		b->isearch_start = b->isearch_start + gbf_text_length(b->gbuf);
+		b->isearch_direction = ISEARCH_DIRECTION_BACKWARD;
+	} else {
+		b->isearch_direction = ISEARCH_DIRECTION_BACKWARD;
+	}
 }
 
 void
