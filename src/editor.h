@@ -42,6 +42,10 @@ void editor_show_message(Editor *e, char *message);
 /// \param e A pointer to the editor structure.
 void editor_draw_statusbar(Editor *e);
 
+/// editor_loop_once is like editor_loop, but it performs only one iteration.
+/// \param e A pointer to the editor structure.
+void editor_loop_once(Editor *e);
+
 /// editor_loop is the main loop. It reads and processes input,
 /// draws the windows, etc.
 /// \param e A pointer to the editor structure.

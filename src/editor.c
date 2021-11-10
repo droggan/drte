@@ -43,56 +43,62 @@ editor_draw_statusbar(Editor *e) {
 }
 
 void
-editor_loop(Editor *e) {
+editor_loop_once(Editor *e) {
 	KeyCode c;
+	char input[32] = {0};
 
-	while (!e->quit && !e->current_buffer->cancel && !e->current_buffer->ok) {
-		char input[32] = {0};
-
+	if (e->current_buffer->draw != NULL) {
 		e->current_buffer->draw(e);
+	}
 
-		c = input_get(input);
+	c = input_get(input);
 
-		if (c >= KEY_SPECIAL_MIN && c <= KEY_SPECIAL_MAX) {
-			Func f = e->current_buffer->funcs[c].func;
-			if (f != NULL) {
-				f(e);
-				e->current_buffer->prev_func = f;
-			}
-		} else if (c == KEY_VALID) {
-			e->string_arg = input;
-			insert(e);
-			e->current_buffer->prev_func = insert;
-		} else {
-			editor_show_message(e, "Unrecognized input");
+	if (c >= KEY_SPECIAL_MIN && c <= KEY_SPECIAL_MAX) {
+		Func f = e->current_buffer->funcs[c].func;
+		if (f != NULL) {
+			f(e);
+			e->current_buffer->prev_func = f;
 		}
+	} else if (c == KEY_VALID) {
+		e->string_arg = input;
+		insert(e);
+		e->current_buffer->prev_func = insert;
+	} else {
+		editor_show_message(e, "Unrecognized input");
+	}
 
-		Buffer *b = e->current_buffer;
+	Buffer *b = e->current_buffer;
 
-		if (e->recording_macro && b->prev_func != macro_start_stop) {
-			e->string_arg = input;
-			macro_append(e);
+	if (e->recording_macro && b->prev_func != macro_start_stop) {
+		e->string_arg = input;
+		macro_append(e);
+	}
+
+	if (b->region_type == REGION_FLUID) {
+		if (b->region_direction == REGION_DIRECTION_NONE) {
+			if (b->position.offset > b->region_start) {
+				b->region_direction = REGION_DIRECTION_RIGHT;
+			} else if (b->position.offset < b->region_start) {
+				b->region_direction = REGION_DIRECTION_LEFT;
+			}
 		}
-
-		if (b->region_type == REGION_FLUID) {
-			if (b->region_direction == REGION_DIRECTION_NONE) {
-				if (b->position.offset > b->region_start) {
-					b->region_direction = REGION_DIRECTION_RIGHT;
-				} else if (b->position.offset < b->region_start) {
-					b->region_direction = REGION_DIRECTION_LEFT;
-				}
-			}
-			if (b->region_direction == REGION_DIRECTION_RIGHT) {
-				b->region_end = b->position.offset;
-			} else if (b->region_direction == REGION_DIRECTION_LEFT) {
-				b->region_start = b->position.offset;
-			}
-			if (b->region_direction != REGION_DIRECTION_NONE) {
-				if (b->region_start == b->region_end) {
-					b->region_direction = REGION_DIRECTION_NONE;
-				}
-			}
-			b->redraw = true;
+		if (b->region_direction == REGION_DIRECTION_RIGHT) {
+			b->region_end = b->position.offset;
+		} else if (b->region_direction == REGION_DIRECTION_LEFT) {
+			b->region_start = b->position.offset;
 		}
+		if (b->region_direction != REGION_DIRECTION_NONE) {
+			if (b->region_start == b->region_end) {
+				b->region_direction = REGION_DIRECTION_NONE;
+			}
+		}
+		b->redraw = true;
+	}
+}
+
+void
+editor_loop(Editor *e) {
+	while (!e->quit && !e->current_buffer->cancel && !e->current_buffer->ok) {
+		editor_loop_once(e);
 	}
 }
