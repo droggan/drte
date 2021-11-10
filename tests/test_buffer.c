@@ -19,6 +19,8 @@ test_buffer_new(void) {
 	test_assert_null(buf->filename);
 	test_assert_ptr_eql(buf, buf->next);
 	test_assert_ptr_eql(buf, buf->prev);
+
+	buffer_free(&buf);
 }
 
 void
@@ -26,12 +28,15 @@ test_buffer_append(void) {
 	Buffer *one = buffer_new(NULL, NULL);
 	Buffer *two = buffer_new(NULL, NULL);
 
-	one->filename = "one";
-	two->filename = "two";
+	one->filename = strdup("one");
+	two->filename = strdup("two");
 
 	buffer_append(&one, two);
 	test_assert_str_eql(one->next->filename, "two");
 	test_assert_str_eql(one->prev->filename, "two");
+
+	buffer_free(&one);
+	buffer_free(&two);
 }
 
 void
@@ -40,9 +45,9 @@ test_buffer_append_2(void) {
 	Buffer *two = buffer_new(NULL, NULL);
 	Buffer *three = buffer_new(NULL, NULL);
 
-	one->filename = "one";
-	two->filename = "two";
-	three->filename = "three";
+	one->filename = strdup("one");
+	two->filename = strdup("two");
+	three->filename = strdup("three");
 
 	buffer_append(&one, two);
 	buffer_append(&two, three);
@@ -54,6 +59,10 @@ test_buffer_append_2(void) {
 	test_assert_str_eql(one->prev->filename, "three");
 	test_assert_str_eql(one->prev->prev->filename, "two");
 	test_assert_str_eql(one->prev->prev->prev->filename, "one");
+
+	buffer_free(&one);
+	buffer_free(&two);
+	buffer_free(&three);
 }
 
 void
@@ -62,9 +71,9 @@ test_buffer_append_3(void) {
 	Buffer *two = buffer_new(NULL, NULL);
 	Buffer *three = buffer_new(NULL, NULL);
 
-	one->filename = "one";
-	two->filename = "two";
-	three->filename = "three";
+	one->filename = strdup("one");
+	two->filename = strdup("two");
+	three->filename = strdup("three");
 
 	buffer_append(&one, two);
 	buffer_append(&one, three);
@@ -76,6 +85,10 @@ test_buffer_append_3(void) {
 	test_assert_str_eql(one->prev->filename, "two");
 	test_assert_str_eql(one->prev->prev->filename, "three");
 	test_assert_str_eql(one->prev->prev->prev->filename, "one");
+
+	buffer_free(&one);
+	buffer_free(&two);
+	buffer_free(&three);
 }
 
 
