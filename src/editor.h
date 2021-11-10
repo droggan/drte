@@ -16,6 +16,7 @@ typedef struct Editor {
 	Window messagebar_win; ///< The window for the messagebar.
 
 	char *string_arg; ///< This is used to pass strings to functions.
+	size_t size_t_arg; ///< This is used to pass size_ts to functions.
 
 	char macro_buffer[MACRO_BUFFER_SIZE]; ///< This buffer contains the current keyboard macro.
 	size_t macro_bytes_written; ///< The number of bytes written to macro_buffer.
