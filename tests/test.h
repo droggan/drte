@@ -14,7 +14,7 @@ size_t _assertions = 0;
 size_t _fails = 0;
 
 
-#define test_print_message() {											\
+#define test_print_message() {									\
 		printf("%s: %zu/%zu\n",									\
 			   __FILE__, _assertions - _fails, _assertions);	\
 	}
@@ -35,6 +35,15 @@ size_t _fails = 0;
 				   __func__, __LINE__, (u), (v));					\
 			_fails++;												\
 		}															\
+	}
+
+#define test_assert_size_t_eql(u, v) {									\
+		_assertions++;													\
+		if ((u) != (v)) {												\
+			printf("%s:%d: Assertion failed. Got: %zu Wanted: %zu\n",	\
+				   __func__, __LINE__, (u), (v));						\
+			_fails++;													\
+		}																\
 	}
 
 
