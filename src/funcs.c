@@ -35,20 +35,13 @@ insert(Editor *e) {
 
 void
 newline(Editor *e) {
-	Buffer *b = e->current_buffer;
-	gbf_insert(b->gbuf, "\n", b->position.offset);
-	right(e);
-	b->has_changed = true;
-	b->redraw = true;
+	e->string_arg = "\n";
+	insert(e);
 }
 
 void
 tab(Editor *e) {
-	Buffer *b = e->current_buffer;
-	gbf_insert(b->gbuf, "\t", b->position.offset);
-	right(e);
-	b->has_changed = true;
-	b->redraw = true;
+	insert(e);
 }
 
 void
