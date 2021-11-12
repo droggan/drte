@@ -515,6 +515,9 @@ void
 macro_play(Editor *e) {
 	size_t i = 0;
 
+	if (e->recording_macro) {
+		macro_start_stop(e);
+	}
 	if (e->macro_bytes_written == 0) {
 		editor_show_message(e, "No macro recorded.");
 	}
