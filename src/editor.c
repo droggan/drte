@@ -52,6 +52,7 @@ editor_loop_once(Editor *e) {
 	}
 
 	c = input_get(input);
+	e->string_arg = input;
 
 	if (c >= KEY_SPECIAL_MIN && c <= KEY_SPECIAL_MAX) {
 		Func f = e->current_buffer->funcs[c].func;
@@ -60,7 +61,6 @@ editor_loop_once(Editor *e) {
 			e->current_buffer->prev_func = f;
 		}
 	} else if (c == KEY_VALID) {
-		e->string_arg = input;
 		insert(e);
 		e->current_buffer->prev_func = insert;
 	} else {
@@ -70,7 +70,6 @@ editor_loop_once(Editor *e) {
 	Buffer *b = e->current_buffer;
 
 	if (e->recording_macro && b->prev_func != macro_start_stop) {
-		e->string_arg = input;
 		macro_append(e);
 	}
 
