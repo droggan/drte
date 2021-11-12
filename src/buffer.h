@@ -67,7 +67,7 @@ typedef struct Buffer {
 	size_t isearch_match_end; ///< The end of the match.
 	struct Buffer *isearch_buffer; ///< The Buffer userd by isearch.
 
-	UserFunc funcs[KEY_N_SPECIAL_KEYS]; ///< The keybindings.
+	UserFunc *funcs[KEY_N_SPECIAL_KEYS]; ///< The keybindings.
 	GapBuffer *gbuf; ///< The GapBuffer.
 
 	DisplayFunc draw; ///< This function draws the buffer.

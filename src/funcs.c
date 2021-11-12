@@ -529,7 +529,7 @@ macro_play(Editor *e) {
 		c = input_check(buffer);
 
 		if (c >= KEY_SPECIAL_MIN && c <= KEY_SPECIAL_MAX) {
-			Func f = e->current_buffer->funcs[c].func;
+			Func f = e->current_buffer->funcs[c]->func;
 			if (f != NULL) {
 				f(e);
 				e->current_buffer->prev_func = f;

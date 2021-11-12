@@ -64,26 +64,26 @@ make_file_chooser_buffer(Editor *e) {
 	buf->next = buf;
 	buf->prev = buf;
 
-	buf->funcs[KEY_CTRL_A] = uf_bol;
-	buf->funcs[KEY_CTRL_B] = uf_left;
-	buf->funcs[KEY_CTRL_C] = uf_cancel;
-	buf->funcs[KEY_CTRL_D] = uf_delete;
-	buf->funcs[KEY_CTRL_E] = uf_eol;
-	buf->funcs[KEY_CTRL_F] = uf_right;
-	buf->funcs[KEY_CTRL_H] = uf_backspace;
-	buf->funcs[KEY_CTRL_I] = uf_tab;
-	buf->funcs[KEY_CTRL_M] = uf_ok;
-	buf->funcs[KEY_CTRL_Z] = uf_suspend;
+	buf->funcs[KEY_CTRL_A] = &uf_bol;
+	buf->funcs[KEY_CTRL_B] = &uf_left;
+	buf->funcs[KEY_CTRL_C] = &uf_cancel;
+	buf->funcs[KEY_CTRL_D] = &uf_delete;
+	buf->funcs[KEY_CTRL_E] = &uf_eol;
+	buf->funcs[KEY_CTRL_F] = &uf_right;
+	buf->funcs[KEY_CTRL_H] = &uf_backspace;
+	buf->funcs[KEY_CTRL_I] = &uf_tab;
+	buf->funcs[KEY_CTRL_M] = &uf_ok;
+	buf->funcs[KEY_CTRL_Z] = &uf_suspend;
 
-	buf->funcs[KEY_RIGHT] = uf_right;
-	buf->funcs[KEY_LEFT] = uf_left;
+	buf->funcs[KEY_RIGHT] = &uf_right;
+	buf->funcs[KEY_LEFT] = &uf_left;
 
-	buf->funcs[KEY_HOME] = uf_bol;
-	buf->funcs[KEY_END] = uf_eol;
+	buf->funcs[KEY_HOME] = &uf_bol;
+	buf->funcs[KEY_END] = &uf_eol;
 
-	buf->funcs[KEY_BACKSPACE] = uf_backspace;
-	buf->funcs[KEY_DELETE] = uf_delete;
-	buf->funcs[KEY_RESIZE] = uf_resize;
+	buf->funcs[KEY_BACKSPACE] = &uf_backspace;
+	buf->funcs[KEY_DELETE] = &uf_delete;
+	buf->funcs[KEY_RESIZE] = &uf_resize;
 
 	return buf;
 }
@@ -154,26 +154,26 @@ static Buffer *make_yes_no_buffer(Editor *e) {
 	buf->next = buf;
 	buf->prev = buf;
 
-	buf->funcs[KEY_CTRL_A] = uf_bol;
-	buf->funcs[KEY_CTRL_B] = uf_left;
-	buf->funcs[KEY_CTRL_C] = uf_cancel;
-	buf->funcs[KEY_CTRL_D] = uf_delete;
-	buf->funcs[KEY_CTRL_E] = uf_eol;
-	buf->funcs[KEY_CTRL_F] = uf_right;
-	buf->funcs[KEY_CTRL_H] = uf_backspace;
-	buf->funcs[KEY_CTRL_I] = uf_tab;
-	buf->funcs[KEY_CTRL_M] = uf_ok;
-	buf->funcs[KEY_CTRL_Z] = uf_suspend;
+	buf->funcs[KEY_CTRL_A] = &uf_bol;
+	buf->funcs[KEY_CTRL_B] = &uf_left;
+	buf->funcs[KEY_CTRL_C] = &uf_cancel;
+	buf->funcs[KEY_CTRL_D] = &uf_delete;
+	buf->funcs[KEY_CTRL_E] = &uf_eol;
+	buf->funcs[KEY_CTRL_F] = &uf_right;
+	buf->funcs[KEY_CTRL_H] = &uf_backspace;
+	buf->funcs[KEY_CTRL_I] = &uf_tab;
+	buf->funcs[KEY_CTRL_M] = &uf_ok;
+	buf->funcs[KEY_CTRL_Z] = &uf_suspend;
 
-	buf->funcs[KEY_RIGHT] = uf_right;
-	buf->funcs[KEY_LEFT] = uf_left;
+	buf->funcs[KEY_RIGHT] = &uf_right;
+	buf->funcs[KEY_LEFT] = &uf_left;
 
-	buf->funcs[KEY_HOME] = uf_bol;
-	buf->funcs[KEY_END] = uf_eol;
+	buf->funcs[KEY_HOME] = &uf_bol;
+	buf->funcs[KEY_END] = &uf_eol;
 
-	buf->funcs[KEY_BACKSPACE] = uf_backspace;
-	buf->funcs[KEY_DELETE] = uf_delete;
-	buf->funcs[KEY_RESIZE] = uf_resize;
+	buf->funcs[KEY_BACKSPACE] = &uf_backspace;
+	buf->funcs[KEY_DELETE] = &uf_delete;
+	buf->funcs[KEY_RESIZE] = &uf_resize;
 
 	return buf;
 }
