@@ -19,7 +19,7 @@ typedef struct {
 	Func func;
 } UserFunc;
 
-
+extern UserFunc uf_insert;
 extern UserFunc uf_newline;
 extern UserFunc uf_tab;
 extern UserFunc uf_delete;

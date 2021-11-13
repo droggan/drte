@@ -1,6 +1,12 @@
 #include "funcs.h"
 #include "userfuncs.h"
 
+UserFunc uf_insert = {
+	.type = USER_FUNC_INSERTION,
+	.name = "insert",
+	.description = "",
+	.func = insert
+};
 
 UserFunc uf_newline = {
 	.type = USER_FUNC_INSERTION,
