@@ -55,21 +55,21 @@ editor_loop_once(Editor *e) {
 	e->string_arg = input;
 
 	if (c >= KEY_SPECIAL_MIN && c <= KEY_SPECIAL_MAX) {
-		Func f = e->current_buffer->funcs[c]->func;
-		if (f != NULL) {
-			f(e);
-			e->current_buffer->prev_func = f;
+		UserFunc *uf = e->current_buffer->funcs[c];
+		if (uf != NULL) {
+			uf->func(e);
+			e->current_buffer->prev_func = uf;
 		}
 	} else if (c == KEY_VALID) {
 		insert(e);
-		e->current_buffer->prev_func = insert;
+		e->current_buffer->prev_func = &uf_insert;
 	} else {
 		editor_show_message(e, "Unrecognized input");
 	}
 
 	Buffer *b = e->current_buffer;
 
-	if (e->recording_macro && b->prev_func != macro_start_stop) {
+	if (e->recording_macro && b->prev_func->func != macro_start_stop) {
 		macro_append(e);
 	}
 

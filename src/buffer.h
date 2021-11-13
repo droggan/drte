@@ -37,7 +37,7 @@ typedef struct Buffer {
 	bool ok; ///< This is used by menus.
 	bool cancel; ///< This is used by menus.
 
-	Func prev_func; ///< The previously called function.
+	UserFunc *prev_func; ///< The previously called function.
 	char *prompt; ///< The prompt shown in menus.
 	size_t target_column; ///< Used by up/down to find the correnct column.
 

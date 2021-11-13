@@ -3,7 +3,6 @@
 
 
 struct Editor;
-typedef void (*Func)(struct Editor*);
 
 typedef enum {
 	USER_FUNC_MOVEMENT,
@@ -16,7 +15,7 @@ typedef struct {
 	UserFuncType type;
 	char *name;
 	char *description;
-	Func func;
+	void (*func)(struct Editor *);
 } UserFunc;
 
 extern UserFunc uf_insert;

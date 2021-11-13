@@ -186,9 +186,9 @@ right(Editor *e) {
 void
 up(Editor *e) {
 	Buffer *b = e->current_buffer;
-	Func prev = e->current_buffer->prev_func;
+	UserFunc *prev = e->current_buffer->prev_func;
 
-	if ((prev != up) && (prev != down)) {
+	if (prev != NULL && (prev->func != up) && (prev->func != down)) {
 		b->target_column = b->position.column;
 	}
 
@@ -201,9 +201,9 @@ up(Editor *e) {
 void
 down(Editor *e) {
 	Buffer *b = e->current_buffer;
-	Func prev = e->current_buffer->prev_func;
+	UserFunc *prev = e->current_buffer->prev_func;
 
-	if ((prev != up) && (prev != down)) {
+	if (prev != NULL && (prev->func != up) && (prev->func != down)) {
 		b->target_column = b->position.column;
 	}
 
@@ -529,15 +529,15 @@ macro_play(Editor *e) {
 		c = input_check(buffer);
 
 		if (c >= KEY_SPECIAL_MIN && c <= KEY_SPECIAL_MAX) {
-			Func f = e->current_buffer->funcs[c]->func;
-			if (f != NULL) {
-				f(e);
-				e->current_buffer->prev_func = f;
+			UserFunc *uf = e->current_buffer->funcs[c];
+			if (uf != NULL) {
+				uf->func(e);
+				e->current_buffer->prev_func = uf;
 			}
 		} else if (c == KEY_VALID) {
 			e->string_arg = buffer;
 			insert(e);
-			e->current_buffer->prev_func = insert;
+			e->current_buffer->prev_func = &uf_insert;
 		} else {
 			editor_show_message(e, "Unrecognized input");
 		}
