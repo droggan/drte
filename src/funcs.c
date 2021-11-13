@@ -610,7 +610,7 @@ save(Editor *e) {
 	FILE *fd;
 
 	if (gbf_at(b->gbuf, length - 1) != '\n') {
-		MenuResult force = menu_yes_no(e, "Force newline? ");
+		MenuResult force = menu_yes_no(e, "Force newline? (yes/no)");
 
 		if (force == MENU_YES) {
 			gbf_insert(b->gbuf, "\n", length);
@@ -697,7 +697,7 @@ void
 close_buffer(Editor *e) {
 	MenuResult r = false;
 	if (e->current_buffer->has_changed) {
-		r = menu_yes_no(e, "Buffer has changed. Save? ");
+		r = menu_yes_no(e, "Buffer has changed. Save? (yes/no)");
 		if (r == MENU_YES) {
 			save(e);
 		} else if (r == MENU_CANCEL) {
