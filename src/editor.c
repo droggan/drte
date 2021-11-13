@@ -43,6 +43,22 @@ editor_draw_statusbar(Editor *e) {
 }
 
 void
+editor_call_userfunc(Editor *e, KeyCode c) {
+	UserFunc *uf = NULL;
+	if (c == KEY_VALID) {
+		uf = &uf_insert;
+	} else if (c >= KEY_SPECIAL_MIN && c <= KEY_SPECIAL_MAX) {
+		uf = e->current_buffer->funcs[c];
+	} else {
+		editor_show_message(e, "Unrecognized input");
+	}
+	if (uf != NULL) {
+		uf->func(e);
+		e->current_buffer->prev_func = uf;
+	}
+}
+
+void
 editor_loop_once(Editor *e) {
 	KeyCode c;
 	char input[32] = {0};
@@ -54,18 +70,7 @@ editor_loop_once(Editor *e) {
 	c = input_get(input);
 	e->string_arg = input;
 
-	if (c >= KEY_SPECIAL_MIN && c <= KEY_SPECIAL_MAX) {
-		UserFunc *uf = e->current_buffer->funcs[c];
-		if (uf != NULL) {
-			uf->func(e);
-			e->current_buffer->prev_func = uf;
-		}
-	} else if (c == KEY_VALID) {
-		insert(e);
-		e->current_buffer->prev_func = &uf_insert;
-	} else {
-		editor_show_message(e, "Unrecognized input");
-	}
+	editor_call_userfunc(e, c);
 
 	Buffer *b = e->current_buffer;
 

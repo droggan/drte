@@ -42,6 +42,12 @@ void editor_show_message(Editor *e, char *message);
 /// \param e A pointer to the editor structure.
 void editor_draw_statusbar(Editor *e);
 
+
+/// editor_call_userfunc calls the function bound to the key given.
+/// \param e A pointer to the editor structure.
+/// \param c A KeyCode.
+void editor_call_userfunc(Editor *e, KeyCode c);
+
 /// editor_loop_once is like editor_loop, but it performs only one iteration.
 /// \param e A pointer to the editor structure.
 void editor_loop_once(Editor *e);

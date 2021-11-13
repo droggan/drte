@@ -528,19 +528,8 @@ macro_play(Editor *e) {
 		strcpy(buffer, e->macro_buffer + i);
 		c = input_check(buffer);
 
-		if (c >= KEY_SPECIAL_MIN && c <= KEY_SPECIAL_MAX) {
-			UserFunc *uf = e->current_buffer->funcs[c];
-			if (uf != NULL) {
-				uf->func(e);
-				e->current_buffer->prev_func = uf;
-			}
-		} else if (c == KEY_VALID) {
-			e->string_arg = buffer;
-			insert(e);
-			e->current_buffer->prev_func = &uf_insert;
-		} else {
-			editor_show_message(e, "Unrecognized input");
-		}
+		editor_call_userfunc(e, c);
+
 		i += strlen(buffer) + 1;
 	}
 }
