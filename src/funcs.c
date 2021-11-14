@@ -589,6 +589,7 @@ prefix(Editor *e) {
 	c = input_get(input);
 
 	switch(c) {
+	case KEY_CTRL_C: uf = &uf_quit; break;
 	case KEY_CTRL_K: uf = &uf_close_buffer; break;
 	case KEY_CTRL_N: uf = &uf_previous_buffer; break;
 	case KEY_CTRL_O: uf = &uf_openfile; break;
