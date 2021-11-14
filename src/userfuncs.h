@@ -47,6 +47,7 @@ extern UserFunc uf_resize;
 extern UserFunc uf_suspend;
 extern UserFunc uf_ok;
 extern UserFunc uf_cancel;
+extern UserFunc uf_prefix;
 extern UserFunc uf_openfile;
 extern UserFunc uf_save;
 extern UserFunc uf_save_as;

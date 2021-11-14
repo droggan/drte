@@ -34,6 +34,7 @@ void resize(struct Editor *e);
 void suspend(struct Editor *e);
 void ok(struct Editor *e);
 void cancel(struct Editor *e);
+void prefix(struct Editor *e);
 void openfile(struct Editor *e);
 void save(struct Editor *e);
 void save_as(struct Editor *e);

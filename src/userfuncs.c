@@ -204,6 +204,13 @@ UserFunc uf_cancel = {
 	.func = cancel
 };
 
+UserFunc uf_prefix = {
+	.type = USER_FUNC_MANAGEMENT,
+	.name = "prefix",
+	.description = "",
+	.func = prefix
+};
+
 UserFunc uf_openfile = {
 	.type = USER_FUNC_MANAGEMENT,
 	.name = "open",

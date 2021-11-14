@@ -581,6 +581,28 @@ cancel(Editor *e) {
 }
 
 void
+prefix(Editor *e) {
+	char input[32] = {0};
+	KeyCode c;
+	UserFunc *uf = NULL;
+
+	c = input_get(input);
+
+	switch(c) {
+	case KEY_CTRL_K: uf = &uf_close_buffer; break;
+	case KEY_CTRL_N: uf = &uf_previous_buffer; break;
+	case KEY_CTRL_O: uf = &uf_openfile; break;
+	case KEY_CTRL_P: uf = &uf_next_buffer; break;
+	case KEY_CTRL_S: uf = &uf_save; break;
+	case KEY_CTRL_W: uf = &uf_save_as; break;
+	}
+	if (uf != NULL) {
+		uf->func(e);
+		e->current_buffer->prev_func = uf;
+	}
+}
+
+void
 openfile(Editor *e) {
 	char *text = menu_choose_file(e);
 	if (text == NULL) {
