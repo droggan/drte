@@ -102,7 +102,7 @@ editor_loop_once(Editor *e) {
 
 void
 editor_loop(Editor *e) {
-	while (!e->quit && !e->current_buffer->cancel && !e->current_buffer->ok) {
+	while (!e->current_buffer->cancel && !e->current_buffer->ok) {
 		editor_loop_once(e);
 	}
 }

@@ -185,7 +185,6 @@ menu_yes_no(Editor *e, char *prompt) {
 	int stop = false;
 	MenuResult ret = false;
 
-	e->quit = false;
 	e->current_buffer = b;
 	b->prompt = prompt;
 

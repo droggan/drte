@@ -702,7 +702,7 @@ close_buffer(Editor *e) {
 			save(e);
 		} else if (r == MENU_CANCEL) {
 			editor_show_message(e, "Cancel");
-			e->quit = false;
+			e->current_buffer->cancel = true;
 			return;
 		}
 	}
@@ -714,5 +714,12 @@ close_buffer(Editor *e) {
 
 void
 quit(Editor *e) {
-	e->quit = true;
+	while (e->current_buffer != NULL) {
+		close_buffer(e);
+		if (e->current_buffer->cancel == true) {
+			e->current_buffer->cancel = false;
+			return;
+		}
+	}
+	exit(0);
 }
