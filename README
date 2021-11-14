@@ -1,0 +1,66 @@
+                             drte - dr's text editor
+drte is a terminal based text editor. It's currently in early stages
+of development. The project's goal is to create a lightweight
+text editor/ide by using the Language Server Protocol.
+
+Currently implemented:
+    - basic movement and editing functions.
+    - cut/copy/paste
+    - isearch
+    - macros
+    - hightlight trailing whitespace
+    - force newline on save
+
+Dependencies
+    - A C99 compiler
+    - C stdlib (including headers)
+    - Python3 (for the build script)
+
+Compiling:
+    run build.py release
+
+    run build.py help for more info
+
+Usage:
+
+    drte [file, file_2, ... file_n]
+
+Keybindings:
+
+    forward           Ctrl-f       Right
+    backward          Ctrl-b       Left
+    up                Ctrl-p       Up
+    down              Ctrl-n       Down
+    bol               Ctrl-a       Home
+    eol               Ctrl-e       End
+    page-up           Ctrl-u       PgUp
+    page-down         Ctrl-v       PgDn
+
+    backspace         Ctrl-h       Backspace
+    delete            Ctrl-d       Delete
+
+    region start/stop Ctrl-Space
+    region off        Ctrl-c
+    copy-region       Alt-w
+    cut-region        Ctrl-w
+    paste             Ctrl-y
+
+    suspend           Ctrl-z
+
+    start inclremental search      Ctrl-s
+      During search
+        Next          Ctrl-s
+        Previous      Ctrl-r
+        Cancel        Ctrl-c
+
+    macro start/stop  F3
+    macro play        F4
+
+    prefix (PF)       Ctrl-g       Ctrl-j
+    close-bufffer     PF Ctrl-k    F8
+    quit              PF Ctrl-c    F10
+    open-file         PF Ctrl-o
+    previous-buffer   PF Ctrl-p
+    next-buffer       PF Ctrl-n
+    save              PF Ctrl-s
+    save-as           PF Ctrl-w
