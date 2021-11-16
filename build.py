@@ -6,18 +6,21 @@ import sys
 
 cc = "clang"
 cflags = "-Os -std=c99 -D_POSIX_C_SOURCE=200809L"
-ldflags = "-static"
+ldflags = ""
 out = "out/release/"
-binname = "drte"
+name = "drte"
 
 devcc = "clang"
-devcflags = "-O0 -g -std=c99 -Wall -Wextra -Wmissing-prototypes -fsanitize=address -fno-omit-frame-pointer -D_POSIX_C_SOURCE=200809L"
+devcflags = "-O0 -g -std=c99 -Wall -Wextra -Wmissing-prototypes\
+ -fsanitize=address -fno-omit-frame-pointer -D_POSIX_C_SOURCE=200809L"
 devldflags = "-fsanitize=address -fno-omit-frame-pointer"
 devout = "out/devel/"
 devbinname = "drte-dev"
 
 testcc = "clang"
-testcflags = "-O0 -g -std=c99 -Wall -Wextra -DDRTE_TEST -Wno-implicit-function-declaration -fno-omit-frame-pointer -fsanitize=address -D_POSIX_C_SOURCE=200809L"
+testcflags = "-O0 -g -std=c99 -Wall -Wextra -DDRTE_TEST\
+-Wno-implicit-function-declaration -fno-omit-frame-pointer\
+ -fsanitize=address -D_POSIX_C_SOURCE=200809L"
 testldflags = "-fno-omit-frame-pointer -fsanitize=address"
 testout = "out/devel/"
 
@@ -28,52 +31,40 @@ testbin = "tests/bin/"
 
 docout = "doc/"
 
-def release():
-    files = os.listdir(source)
+def print_and_exec(command):
+    """Print command and execute it."""
+    print(command)
+    os.system(command)
+
+def compile_dir(srcdir, ccom, cflags, objdir):
+    """Compile all c files in srcdir using ccom with cflags and
+    put the objectfiles in objdir."""
+    files = os.listdir(srcdir)
     for f in files:
         name, ext = os.path.splitext(f)
         if ext != ".c":
             continue
-        com = cc + " " + cflags +  " -c " + source + f + " -o " + out + name + ".o"
-        print(com)
-        os.system(com)
-    lcom = cc + " " + ldflags + " -o " + binname + " " + out + "*.o"
-    print(lcom)
-    os.system(lcom)
+        com = ccom + " " + cflags +  " -c " + srcdir + f + " -o " + objdir + name + ".o"
+        print_and_exec(com)
+
+def link_dir(binname, ccom, ldflags, objdir):
+    """Produce a binary named binname, by linking all object files in objdir
+    using ccom with ldflags."""
+    lcom = ccom + " " + ldflags + " -o " + binname + " " + objdir + "*.o"
+    print_and_exec(lcom)
+
+def release():
+    compile_dir(source, cc, cflags, out)
+    link_dir(name, cc, ldflags, out)
 
 def devel():
-    files = os.listdir(source)
-    for f in files:
-        name, ext = os.path.splitext(f)
-        if ext != ".c":
-            continue
-        com = devcc + " " + devcflags +  " -c " + source + f + " -o " + devout + name + ".o"
-        print(com)
-        os.system(com)
-    lcom = devcc + " " + devldflags + " -o " + devbinname + " " + devout + "*.o"
-    print(lcom)
-    os.system(lcom)
+    compile_dir(source, devcc, devcflags, devout)
+    link_dir(devbinname, devcc, devldflags, devout)
+
 
 def test():
-    files = os.listdir(source)
-    for f in files:
-        name, ext = os.path.splitext(f)
-        if ext != ".c":
-            continue
-        c = testcc + " " + testcflags +  " -c " + source + f + " -o " + \
-            testout + name + ".o"
-        print(c)
-        os.system(c)
-
-    files = os.listdir(testsource)
-    for f in files:
-        name, ext = os.path.splitext(f)
-        if ext != ".c":
-            continue
-        c = testcc + " " + testcflags + " -c " + testsource + f + \
-            " -o " + testout + name + ".o"
-        print(c)
-        os.system(c)
+    compile_dir(source, testcc, testcflags, testout)
+    compile_dir(testsource, testcc, testcflags, testout)
 
     files = os.listdir(testout)
     r = re.compile("test_(.*).o")
@@ -88,8 +79,7 @@ def test():
             name, ext = os.path.splitext(f)
             c = testcc + " " + testldflags + " -o " + testbin + name + " " + \
                 testout + f + " " + objects
-            print(c)
-            os.system(c)
+            print_and_exec(c)
 
     print("\n\nRunning tests:")
     files = os.listdir(testbin)
@@ -101,25 +91,18 @@ def clean():
     devcom = "rm " + devout + "*.o"
     testcom = "rm " + testout + "*.o " + testbin + "*"
 
-    print(com)
-    os.system(com)
-
-    print(devcom)
-    os.system(devcom)
-
-    print(testcom)
-    os.system(testcom)
+    print_and_exec(com)
+    print_and_exec(devcom)
+    print_and_exec(testcom)
 
 def distclean():
     clean()
     com = "rm -r " + docout + "* " + binname + " " + devbinname
-    print(com)
-    os.system(com)
+    print_and_exec(com)
 
 def doc():
     com = "doxygen Doxyfile"
-    print(com)
-    os.system(com)
+    print_and_exec(com)
 
 def usage(fail = False):
     print("Usage: build.py target")
