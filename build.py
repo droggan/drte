@@ -97,7 +97,7 @@ def clean():
 
 def distclean():
     clean()
-    com = "rm -r " + docout + "* " + binname + " " + devbinname
+    com = "rm -r " + docout + "* " + name + " " + devbinname
     print_and_exec(com)
 
 def doc():
