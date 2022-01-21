@@ -2,7 +2,7 @@
 #define DRTE_TEST_H
 
 /// \file
-/// This file include some macros for unit tests.
+/// This file includes some macros for unit tests.
 /// Usage:
 /// \code
 /// #include <stdio.h>
