@@ -5,14 +5,14 @@ import re
 import sys
 
 cc = "clang"
-cflags = "-Os -std=c99 -D_POSIX_C_SOURCE=200809L"
+cflags = "-Os -std=c99"
 ldflags = ""
 out = "out/release/"
 name = "drte"
 
 devcc = "clang"
 devcflags = "-O0 -g -std=c99 -Wall -Wextra -Wmissing-prototypes\
- -fsanitize=address -fno-omit-frame-pointer -D_POSIX_C_SOURCE=200809L"
+ -fsanitize=address -fno-omit-frame-pointer"
 devldflags = "-fsanitize=address -fno-omit-frame-pointer"
 devout = "out/devel/"
 devbinname = "drte-dev"
@@ -20,7 +20,7 @@ devbinname = "drte-dev"
 testcc = "clang"
 testcflags = "-O0 -g -std=c99 -Wall -Wextra -DDRTE_TEST\
  -Wno-implicit-function-declaration -fno-omit-frame-pointer\
- -fsanitize=address -D_POSIX_C_SOURCE=200809L"
+ -fsanitize=address"
 testldflags = "-fno-omit-frame-pointer -fsanitize=address"
 testout = "out/devel/"
 

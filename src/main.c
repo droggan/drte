@@ -1,3 +1,5 @@
+#define _POSIX_C_SOURCE 200809L
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -15,6 +17,7 @@
 #include "buffer.h"
 #include "editor.h"
 #include "utf8.h"
+
 
 static void sigcont_handler(int unused);
 static void sigwinch_handler(int unused);
