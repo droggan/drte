@@ -68,7 +68,7 @@ size_t _fails = 0;
 #define test_assert_null(p) {											\
 		_assertions++;													\
 		if ((p) != NULL) {												\
-			printf("%s:%d: Assertion failed. Got: NULL Wanted: %p\n",	\
+			printf("%s:%d: Assertion failed. Got: %p Wanted: NULL\n",	\
 				   __func__, __LINE__, (p));							\
 			_fails++;													\
 		}																\
