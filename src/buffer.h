@@ -39,7 +39,7 @@ typedef struct Buffer {
 
 	UserFunc *prev_func; ///< The previously called function.
 	char *prompt; ///< The prompt shown in menus.
-	size_t target_column; ///< Used by up/down to find the correnct column.
+	size_t target_column; ///< Used by up/down to find the correct column.
 
 	///< This struct saves the current position.
 	struct {
@@ -78,8 +78,19 @@ typedef struct Buffer {
 	struct Buffer *prev; ///< The previous buffer.
 } Buffer;
 
+/// buffer_new creates a new buffer.
+/// \param e The editor structure.
+/// \param filename The file to read into the buffer or NULL for an unnamed buffer.
+/// \return A new Buffer or NULL on error.
 Buffer *buffer_new(struct Editor *e, char *filename);
+
+/// buffer_free frees a buffer and sets the given pointer to NULL.
+/// \param buf The buffer to free.
 void buffer_free(Buffer **buf);
+
+/// buffer_append appends a new buffer after the current one.
+/// \param current The current buffer.
+/// \param new The buffer to append.
 void buffer_append(Buffer **current, Buffer *new);
 
 

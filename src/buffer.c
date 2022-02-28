@@ -277,7 +277,7 @@ buffer_draw_func(Editor *e) {
 		if (ib->isearch_direction == ISEARCH_DIRECTION_BACKWARD) {
 			pcol = display_show_string(e->messagebar_win, 0, pcol, "Reverse ");
 		}
-		pcol = display_show_string(e->messagebar_win, 0, pcol, "ISeach: ");
+		pcol = display_show_string(e->messagebar_win, 0, pcol, "ISearch: ");
 		pcol = display_show_string(e->messagebar_win, 0, pcol, text);
 		free(text);
 	} else {
