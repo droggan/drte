@@ -280,7 +280,6 @@ isearch(Editor *e) {
 	Buffer *ib = e->current_buffer->isearch_buffer;
 	Buffer *tb = e->current_buffer;
 
-
 	ib->isearch_start = tb->position.offset;
 	ib->isearch_is_active = true;
 	ib->isearch_has_match = true;
@@ -319,6 +318,7 @@ isearch(Editor *e) {
 			free(s);
 		}
 	}
+
 	ib->isearch_is_active = false;
 	ib->isearch_has_match = false;
 	ib->isearch_has_wrapped = false;
