@@ -125,7 +125,8 @@ yes_no_draw_func(Editor *e) {
 	free(text);
 }
 
-static Buffer *make_yes_no_buffer(Editor *e) {
+static Buffer *
+make_yes_no_buffer(Editor *e) {
 	Buffer *buf = malloc(sizeof(*buf));
 	if (buf == NULL) {
 		editor_show_message(e, "Out of memory");
