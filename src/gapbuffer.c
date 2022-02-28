@@ -192,7 +192,7 @@ gbf_clear(GapBuffer *gbuf) {
 }
 
 char
-gbf_at(GapBuffer  *gbuf, size_t offset) {
+gbf_at(GapBuffer *gbuf, size_t offset) {
 	if (offset > max_offset(gbuf)) {
 		return '\0';
 	}
