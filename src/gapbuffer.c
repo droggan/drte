@@ -100,8 +100,6 @@ gbf_text(GapBuffer *gbuf) {
 }
 
 // Moves gap to position off.
-// \param gbuf A GapBuffer.
-// \param offset The position to move the gap to.
 STATIC void
 move_gap(GapBuffer *gbuf, size_t offset) {
 	size_t len;
@@ -130,7 +128,6 @@ move_gap(GapBuffer *gbuf, size_t offset) {
 }
 
 // Expands the gap.
-// \param gbuf A Gapbuffer.
 STATIC void
 expand_gap(GapBuffer *gbuf) {
 	size_t flen = first_part_length(gbuf);
