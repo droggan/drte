@@ -189,6 +189,33 @@ test_gbf_at(void) {
 	gbf_free(&gbuf);
 }
 
+void
+test_gbf_get_line(void) {
+	GapBuffer *gbuf = gbf_new();
+	char *s = "hello\nworld!\n\nfoo";
+	char buffer[4096];
+
+	gbf_insert(gbuf, s, 0);
+
+	for (size_t i = 0; i <= 5; i++) {
+		gbf_get_line(gbuf, i, buffer);
+		test_assert_str_eql(buffer, "hello");
+	}
+	for (size_t i = 6; i <= 12; i++) {
+		gbf_get_line(gbuf, i, buffer);
+		test_assert_str_eql(buffer, "world!");
+	}
+	gbf_get_line(gbuf, 13, buffer);
+	test_assert_str_eql(buffer, "");
+
+	for (size_t i = 14; i <= 16; i++) {
+		gbf_get_line(gbuf, i, buffer);
+		test_assert_str_eql(buffer, "foo");
+	}
+
+	gbf_free(&gbuf);
+}
+
 static char *lorem = "Lorem ipsum dolor sit amet, consectetur adipiscing elit,\n"
 	"sed do eiusmod tempor incididunt ut labore et dolore magna aliqua";
 
@@ -492,6 +519,7 @@ main(void) {
 	test_gbf_delete_too_much();
 	test_gbf_clear();
 	test_gbf_at();
+	test_gbf_get_line();
 
 	test_make_table_1();
 	test_make_table_2();

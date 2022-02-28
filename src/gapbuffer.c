@@ -203,6 +203,28 @@ gbf_at(GapBuffer *gbuf, size_t offset) {
 	}
 }
 
+void
+gbf_get_line(GapBuffer *gbuf, size_t offset, char *buffer) {
+	size_t i = 0;
+	size_t start = offset;
+
+	if (start != 0) {
+		do {
+			start--;
+		} while (start > 0 && gbf_at(gbuf, start) != '\n');
+	}
+	if (gbf_at(gbuf, start) == '\n') {
+		start++;
+	}
+
+	while (gbf_at(gbuf, start) != '\n' && gbf_at(gbuf, start) != '\0') {
+		buffer[i] = gbf_at(gbuf, start);
+		start++;
+		buffer++;
+	}
+	buffer[i] = '\0';
+}
+
 size_t
 gbf_text_length(GapBuffer *gbuf) {
 	return max_offset(gbuf);

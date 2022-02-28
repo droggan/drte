@@ -62,6 +62,11 @@ char gbf_at(GapBuffer *gbuf, size_t offset);
 /// \return The text length in bytes.
 size_t gbf_text_length(GapBuffer *gbuf);
 
+/// gbf_get_line copies the line containing offset into buffer.
+/// \param gbuf A GapBuffer.
+/// \param offset The offset.
+/// \param buffer An allocated buffer.
+void gbf_get_line(GapBuffer *gbuf, size_t offset, char *buffer);
 
 /// gbf_search searches for a pattern in the GapBuffer, from left to right.
 /// \param gbuf The GapBuffer to search.
