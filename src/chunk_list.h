@@ -14,7 +14,7 @@ typedef struct ChunkListItem ChunkListItem;
 /// chunk_list_new creates a new ChunkList.
 /// \param chunk_size The size of a chunk. If this is zero, the default size will be used.
 /// \return A new ChunkList or NULL, if out of memory.
-///         [O[OThe list needs to be freed with chunk_list_free().
+///         The list needs to be freed with chunk_list_free().
 ChunkList *chunk_list_new(size_t chunk_size);
 
 /// chunk_list_insert saves a string in the ChunkList.
@@ -31,7 +31,7 @@ ChunkListItem *chunk_list_insert(ChunkList *cl, char *text);
 char *chunk_list_get_item(ChunkList *cl, ChunkListItem *item);
 
 /// chunk_list_free frees a ChunkList and sets the given pointer to NULL.
-/// \param cl A ChunkList.OA
+/// \param cl A ChunkList.
 void chunk_list_free(ChunkList **cl);
 
 
