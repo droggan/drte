@@ -171,7 +171,7 @@ buffer_new(Editor *e, char *filename) {
 				return buf;
 			} else {
 				char out[1024];
-				snprintf(out, 1023, "Cannot open %s", filename);
+				snprintf(out, 1023, "Cannot stat %s", filename);
 				editor_show_message(e, out);
 				return NULL;
 			}
@@ -186,7 +186,7 @@ buffer_new(Editor *e, char *filename) {
 			long read = fread(text, st.st_size, 1, file);
 			if (read != 1) {
 				char out[1024];
-				snprintf(out, 1023, "Cannot open %s", filename);
+				snprintf(out, 1023, "Cannot read %s", filename);
 				editor_show_message(e, out);
 				return NULL;
 			}
