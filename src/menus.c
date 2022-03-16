@@ -8,16 +8,74 @@
 #include "input.h"
 #include "userfuncs.h"
 #include "funcs.h"
+#include "chunk_list.h"
+#include "menus.h"
 #include "buffer.h"
 #include "editor.h"
-#include "menus.h"
+#include "utf8.h"
 
 
+static MenuItemList *new_menu_item_list(void);
+static MenuItem *menu_item_list_insert(MenuItemList *list, char *item);
+static void free_menu_item_list(MenuItemList **list);
 static void file_chooser_draw_func(Editor *b);
 static Buffer *make_file_chooser_buffer(Editor *e);
 static void yes_no_draw_func(Editor *e);
 static Buffer *make_yes_no_buffer(Editor *e);
 
+
+static MenuItemList *
+new_menu_item_list(void) {
+	MenuItemList *list = malloc(sizeof(*list));
+	if (list == NULL) {
+		return NULL;
+	}
+	memset(list, 0, sizeof(*list));
+
+	list->chunk_list = chunk_list_new(0);
+	if (list->chunk_list == NULL) {
+		return NULL;
+	}
+
+	return list;
+}
+
+static MenuItem *
+menu_item_list_insert(MenuItemList *list, char *item) {
+	MenuItem *new_item = malloc(sizeof(*new_item));
+	if (new_item == NULL) {
+		return NULL;
+	}
+
+	ChunkListItem *citem = chunk_list_insert(list->chunk_list, item);
+	if (citem == NULL) {
+		return NULL;
+	}
+
+	new_item->item = citem;
+	new_item->next = list->first;
+	if (new_item->next != NULL) {
+		new_item->next->prev = new_item;
+	}
+	new_item->prev = NULL;
+	list->first = new_item;
+	list->first_visible_item = new_item;
+
+	return new_item;
+}
+
+static void
+free_menu_item_list(MenuItemList **list) {
+	chunk_list_free(&(*list)->chunk_list);
+	while ((*list)->first != NULL) {
+		MenuItem *i = (*list)->first;
+		(*list)->first = (*list)->first->next;
+		free(i->item);
+		free(i);
+	}
+	free(*list);
+	*list = NULL;
+}
 
 static void
 file_chooser_draw_func(Editor *e) {
