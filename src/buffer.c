@@ -175,7 +175,7 @@ buffer_new(Editor *e, char *filename) {
 				editor_show_message(e, out);
 				return NULL;
 			}
-		} else {
+		} else if (st.st_size != 0) {
 			char *text = malloc(st.st_size + 1);
 			if (text == NULL) {
 				editor_show_message(e, "Out of memory");
