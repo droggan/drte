@@ -615,8 +615,6 @@ openfile(Editor *e) {
 			e->current_buffer = e->current_buffer->next;
 			e->current_buffer->redraw = true;
 			editor_show_message(e, text);
-		} else {
-			editor_show_message(e, "Cannot add buffer");
 		}
 	}
 }
