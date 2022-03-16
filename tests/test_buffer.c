@@ -10,6 +10,8 @@
 #include "../src/display.h"
 #include "../src/userfuncs.h"
 #include "../src/gapbuffer.h"
+#include "../src/chunk_list.h"
+#include "../src/menus.h"
 #include "../src/buffer.h"
 
 
