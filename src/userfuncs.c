@@ -50,6 +50,20 @@ UserFunc uf_right = {
 	.func = right
 };
 
+UserFunc uf_menu_up = {
+	.type = USER_FUNC_MOVEMENT,
+	.name = "menu_up",
+	.description = "Select the previous menu item.",
+	.func = menu_up
+};
+
+UserFunc uf_menu_down = {
+	.type = USER_FUNC_MOVEMENT,
+	.name = "menu_down",
+	.description = "Select the next menu item.",
+	.func = menu_down
+};
+
 UserFunc uf_up = {
 	.type = USER_FUNC_MOVEMENT,
 	.name = "up",

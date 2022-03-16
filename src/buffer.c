@@ -11,6 +11,8 @@
 #include "input.h"
 #include "funcs.h"
 #include "userfuncs.h"
+#include "chunk_list.h"
+#include "menus.h"
 #include "buffer.h"
 #include "editor.h"
 

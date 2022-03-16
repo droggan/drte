@@ -9,6 +9,8 @@
 #include "funcs.h"
 #include "gapbuffer.h"
 #include "userfuncs.h"
+#include "chunk_list.h"
+#include "menus.h"
 #include "input.h"
 #include "buffer.h"
 #include "editor.h"
@@ -66,6 +68,48 @@ backspace (Editor *e) {
 	}
 	left(e);
 	delete(e);
+}
+
+void
+menu_up(Editor *e) {
+	Buffer *b = e->current_buffer;
+	MenuItemList *items = b->menu_items;
+
+	if (items->selected == NULL) {
+		items->selected = items->first;
+	} else {
+		if (items->first_visible_item == items->selected && items->selected->prev != NULL) {
+			items->first_visible_item = items->first_visible_item->prev;
+		}
+		if (b->menu_items->selected->prev != NULL) {
+			b->menu_items->selected = b->menu_items->selected->prev;
+		}
+	}
+}
+
+void
+menu_down(Editor *e) {
+	Buffer *b = e->current_buffer;
+	MenuItemList *items = b->menu_items;
+	size_t dist = 0;
+	MenuItem *iter = b->menu_items->first_visible_item;
+
+	if (items->selected == NULL) {
+		items->selected = items->first_visible_item;
+	} else {
+		if (items->selected->next != NULL) {
+			items->selected = items->selected->next;
+		}
+	}
+
+	while (items->selected != iter) {
+		iter = iter->next;
+		dist++;
+	}
+	if (dist >= b->win->size.lines) {
+		items->first_visible_item = items->first_visible_item->next;
+		dist--;
+	}
 }
 
 // Scrolls up by one line. Returns 1 on success, 0 on failure.

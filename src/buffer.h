@@ -74,6 +74,8 @@ typedef struct Buffer {
 	DisplayFunc draw_statusbar; ///< This function draws the statusbar.
 	size_t first_visible_char; ///< The start of the first visible line.
 
+	MenuItemList *menu_items;  ///< Used by various menus to store the menu items.
+
 	struct Buffer *next; ///< The next buffer.
 	struct Buffer *prev; ///< The previous buffer.
 } Buffer;

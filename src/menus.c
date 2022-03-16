@@ -3,6 +3,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <unistd.h>
+#include <dirent.h>
+#include <sys/stat.h>
+
 #include "gapbuffer.h"
 #include "display.h"
 #include "input.h"
@@ -81,6 +85,26 @@ static void
 file_chooser_draw_func(Editor *e) {
 	Buffer *b = e->current_buffer;
 	char *text = gbf_text(b->gbuf);
+	size_t lines = b->win->size.lines;
+	size_t line = 0;
+	MenuItem *current = b->menu_items->first_visible_item;
+
+	display_clear_window(*b->win);
+
+	while ((current != NULL) && (line < lines)) {
+		char *item_text = chunk_list_get_item(b->menu_items->chunk_list, current->item);
+		// TODO: if match show else continue
+		if (current == b->menu_items->selected) {
+			display_set_color(BACKGROUND_GREEN);
+			display_set_color(FOREGROUND_BLACK);
+		}
+
+		display_show_string(*b->win, line, 0, item_text);
+		free(item_text);
+		line++;
+		current = current->next;
+		display_set_color(OFF);
+	}
 
 	display_clear_window(*b->messagebar_win);
 
@@ -131,10 +155,14 @@ make_file_chooser_buffer(Editor *e) {
 	buf->funcs[KEY_CTRL_H] = &uf_backspace;
 	buf->funcs[KEY_CTRL_I] = &uf_tab;
 	buf->funcs[KEY_CTRL_M] = &uf_ok;
+	buf->funcs[KEY_CTRL_N] = &uf_menu_down;
+	buf->funcs[KEY_CTRL_P] = &uf_menu_up;
 	buf->funcs[KEY_CTRL_Z] = &uf_suspend;
 
-	buf->funcs[KEY_RIGHT] = &uf_right;
+	buf->funcs[KEY_UP] = &uf_menu_up;
+	buf->funcs[KEY_DOWN] = &uf_menu_down;
 	buf->funcs[KEY_LEFT] = &uf_left;
+	buf->funcs[KEY_RIGHT] = &uf_right;
 
 	buf->funcs[KEY_HOME] = &uf_bol;
 	buf->funcs[KEY_END] = &uf_eol;
@@ -150,18 +178,69 @@ char *
 menu_choose_file(Editor *e) {
 	Buffer *b = make_file_chooser_buffer(e);
 	Buffer *tmp = e->current_buffer;
-	char *ret = NULL;
+	char *selected = NULL;
+	char *cwd;
+	GapBuffer *path = gbf_new();
+	struct dirent *entry;
+	struct stat st;
 
 	e->current_buffer = b;
 
-	editor_loop(e);
+	cwd = getcwd(NULL, 0);
+	gbf_insert(path, cwd, 0);
+	free(cwd);
 
-	if (b->cancel) {
-		ret = NULL;
-	} else {
-		ret = gbf_text(e->current_buffer->gbuf);
+	do {
+		char *p = gbf_text(path);
+		DIR *dir = opendir(p);
+		free(p);
+
+		MenuItemList *list = new_menu_item_list();
+		while ((entry = readdir(dir))) {
+			if (strcmp(entry->d_name, ".") == 0) {
+				continue;
+			}
+			menu_item_list_insert(list, entry->d_name);
+		}
+		list->first_visible_item = list->first;
+		b->menu_items = list;
+		closedir(dir);
+
+		editor_loop(e);
+
+		if (b->cancel) {
+			selected = NULL;
+		} else {
+			if (list->selected != NULL) {
+				selected = chunk_list_get_item(list->chunk_list, list->selected->item);
+			} else {
+				selected = gbf_text(e->current_buffer->gbuf);
+			}
+		}
+		free_menu_item_list(&list);
+
+		if (selected != NULL) {
+			char *cp;
+
+			gbf_insert(path, "/", gbf_text_length(path));
+			gbf_insert(path, selected, gbf_text_length(path));
+			free(selected);
+
+			cp = gbf_text(path);
+			stat(cp, &st);
+			if (S_ISDIR(st.st_mode)) {
+				b->ok = false;
+			}
+			free(cp);
+		}
+	} while (!b->cancel && !b->ok);
+
+	char *ret = NULL;
+	if (!b->cancel) {
+		ret = gbf_text(path);
 	}
 	buffer_free(&b);
+	gbf_free(&path);
 	e->current_buffer = tmp;
 	e->current_buffer->redraw = true;
 
