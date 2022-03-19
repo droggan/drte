@@ -15,6 +15,7 @@ typedef enum {
 /// MenuItem is an entry in a MenuItemList.
 typedef struct MenuItem {
 	ChunkListItem *item; ///< The actual item.
+	bool is_dir; ///< True, if item is a directory.
 	struct MenuItem *next; ///< The next item in the menu list.
 	struct MenuItem *prev; ///< The previous item in the menu list.
 } MenuItem;

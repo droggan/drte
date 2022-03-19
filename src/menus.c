@@ -1,3 +1,4 @@
+#define _DEFAULT_SOURCE
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -20,7 +21,7 @@
 
 
 static MenuItemList *new_menu_item_list(void);
-static MenuItem *menu_item_list_insert(MenuItemList *list, char *item);
+static MenuItem *menu_item_list_insert(MenuItemList *list, char *item, bool is_dir);
 static void free_menu_item_list(MenuItemList **list);
 static void file_chooser_draw_func(Editor *b);
 static Buffer *make_file_chooser_buffer(Editor *e);
@@ -45,7 +46,7 @@ new_menu_item_list(void) {
 }
 
 static MenuItem *
-menu_item_list_insert(MenuItemList *list, char *item) {
+menu_item_list_insert(MenuItemList *list, char *item, bool is_dir) {
 	MenuItem *new_item = malloc(sizeof(*new_item));
 	if (new_item == NULL) {
 		return NULL;
@@ -57,6 +58,7 @@ menu_item_list_insert(MenuItemList *list, char *item) {
 	}
 
 	new_item->item = citem;
+	new_item->is_dir = is_dir;
 	new_item->next = list->first;
 	if (new_item->next != NULL) {
 		new_item->next->prev = new_item;
@@ -131,7 +133,10 @@ file_chooser_draw_func(Editor *e) {
 			display_set_color(FOREGROUND_BLACK);
 		}
 
-		display_show_string(*b->win, line, 0, item_text);
+		size_t drawn = display_show_string(*b->win, line, 0, item_text);
+		if (current->is_dir) {
+			display_show_string(*b->win, line, drawn, "/");
+		}
 		free(item_text);
 		line++;
 		current = current->next;
@@ -229,10 +234,16 @@ menu_choose_file(Editor *e) {
 
 		MenuItemList *list = new_menu_item_list();
 		while ((entry = readdir(dir))) {
+			bool is_dir = false;
 			if (strcmp(entry->d_name, ".") == 0) {
 				continue;
 			}
-			menu_item_list_insert(list, entry->d_name);
+			// TODO: according to the man page, this does not work on all filesystems.
+			// Is there a relevant fs, that doesn't support this?
+			if (entry->d_type == DT_DIR) {
+				is_dir = true;
+			}
+			menu_item_list_insert(list, entry->d_name, is_dir);
 		}
 		list->first_visible_item = list->first;
 		b->menu_items = list;
