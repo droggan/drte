@@ -87,10 +87,42 @@ file_chooser_draw_func(Editor *e) {
 	char *text = gbf_text(b->gbuf);
 	size_t lines = b->win->size.lines;
 	size_t line = 0;
+	MenuItemList *items = b->menu_items;
+	size_t first_visible = 0;
+	size_t selected = 0;
+
+	// Scroll up/down, if necessary.
+	if (items->selected != NULL) {
+		MenuItem *iter = b->menu_items->first;
+		size_t i = 0;
+
+		// Measure the distance between the first visible item and the selected item.
+		while(iter != NULL) {
+			if (iter == items->first_visible_item) {
+				first_visible = i;
+			} else if (iter == items->selected) {
+				selected = i;
+			}
+			i++;
+			iter = iter->next;
+		}
+		if (first_visible < selected) {
+			size_t dist = selected - first_visible;
+			// If the distance is bigger than the window size,
+			// the selected item is offscreen and we need to scroll down.
+			while (dist >= b->win->size.lines) {
+				items->first_visible_item = items->first_visible_item->next;
+				dist--;
+			}
+		} else if (first_visible > selected) {
+			// If the selected item is above the screen, we simply
+			// set the first visible item  to the selected item.
+			items->first_visible_item = items->selected;
+		}
+	}
+
 	MenuItem *current = b->menu_items->first_visible_item;
-
 	display_clear_window(*b->win);
-
 	while ((current != NULL) && (line < lines)) {
 		char *item_text = chunk_list_get_item(b->menu_items->chunk_list, current->item);
 		// TODO: if match show else continue
