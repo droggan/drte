@@ -20,6 +20,7 @@
 #include "utf8.h"
 
 
+static MenuItem *item_list_sort(MenuItem *list);
 static MenuItemList *new_menu_item_list(void);
 static MenuItem *menu_item_list_insert(MenuItemList *list, char *item, bool is_dir);
 static void free_menu_item_list(MenuItemList **list);
@@ -28,6 +29,85 @@ static Buffer *make_file_chooser_buffer(Editor *e);
 static void yes_no_draw_func(Editor *e);
 static Buffer *make_yes_no_buffer(Editor *e);
 
+
+// Sort the item list using merge sort.
+static MenuItem *
+item_list_sort(MenuItem *list) {
+	MenuItem *left;
+	MenuItem *right;
+	MenuItem *slow = list;
+	MenuItem *fast = list;
+
+	if (list == NULL || list->next == NULL) {
+		return list;
+	}
+
+	// Split the list in two halves.
+	while (fast->next != NULL && fast->next->next != NULL) {
+		fast = fast->next->next;
+		slow = slow->next;
+	}
+	left = list;
+	right = slow->next;
+	slow->next = NULL;
+
+	// Sort the two halves.
+	left = item_list_sort(left);
+	right = item_list_sort(right);
+
+	// Merge the two lists.
+	MenuItem *out = NULL;
+	MenuItem **new = &out;
+	while (left != NULL || right != NULL) {
+		if (left == NULL) {
+			*new = right;
+			break;
+		}
+		if (right == NULL) {
+			*new = left;
+			break;
+		}
+
+		// Compare the items. We want to sort directories first, so if one item
+		// is a directory and the other isn't, it automatically comes first.
+		int direction = 0;
+		if (left->is_dir && !right->is_dir) {
+			direction = -1;
+		} else if (!left->is_dir && right->is_dir) {
+			direction = 1;
+		} else {
+			char *left_item = chunk_list_get_item(left->item);
+			char *right_item = chunk_list_get_item(right->item);
+
+			direction = strcmp(left_item, right_item);
+
+			free(left_item);
+			free(right_item);
+		}
+
+		if (direction <= 0) {
+			*new = left;
+			left = left->next;
+			new = &(*new)->next;
+		} else  {
+			*new = right;
+			right = right->next;
+			new = &(*new)->next;
+		}
+	}
+
+	// Fix the prev pointers.
+	// TODO: we should be able to fix the prev pointers during merging.
+	MenuItem *last = NULL;
+	MenuItem *iter = out;
+	while (iter != NULL) {
+		iter->prev = last;
+		last = iter;
+		iter = iter->next;
+	}
+
+	return out;
+}
 
 static MenuItemList *
 new_menu_item_list(void) {
@@ -126,7 +206,7 @@ file_chooser_draw_func(Editor *e) {
 	MenuItem *current = b->menu_items->first_visible_item;
 	display_clear_window(*b->win);
 	while ((current != NULL) && (line < lines)) {
-		char *item_text = chunk_list_get_item(b->menu_items->chunk_list, current->item);
+		char *item_text = chunk_list_get_item(current->item);
 		// TODO: if match show else continue
 		if (current == b->menu_items->selected) {
 			display_set_color(BACKGROUND_GREEN);
@@ -243,7 +323,7 @@ menu_choose_file(Editor *e) {
 		MenuItemList *list = new_menu_item_list();
 		while ((entry = readdir(dir))) {
 			bool is_dir = false;
-			if (strcmp(entry->d_name, ".") == 0) {
+			if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
 				continue;
 			}
 			// TODO: according to the man page, this does not work on all filesystems.
@@ -253,9 +333,13 @@ menu_choose_file(Editor *e) {
 			}
 			menu_item_list_insert(list, entry->d_name, is_dir);
 		}
-		list->first_visible_item = list->first;
-		b->menu_items = list;
 		closedir(dir);
+
+		list->first = item_list_sort(list->first);
+		menu_item_list_insert(list, "..", true);
+		list->first_visible_item = list->first;
+
+		b->menu_items = list;
 
 		editor_loop(e);
 
@@ -263,7 +347,7 @@ menu_choose_file(Editor *e) {
 			selected = NULL;
 		} else {
 			if (list->selected != NULL) {
-				selected = chunk_list_get_item(list->chunk_list, list->selected->item);
+				selected = chunk_list_get_item(list->selected->item);
 			} else {
 				selected = gbf_text(e->current_buffer->gbuf);
 			}
