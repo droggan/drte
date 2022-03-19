@@ -25,10 +25,9 @@ ChunkList *chunk_list_new(size_t chunk_size);
 ChunkListItem *chunk_list_insert(ChunkList *cl, char *text);
 
 /// chunk_list_get_item returns the saved text represented by a given ChunkListItem.
-/// \param cl A ChunkList.
 /// \param item A ChunkListItem.
 /// \returns A dynamically allocated string, or NULL when out of memory.
-char *chunk_list_get_item(ChunkList *cl, ChunkListItem *item);
+char *chunk_list_get_item(ChunkListItem *item);
 
 /// chunk_list_free frees a ChunkList and sets the given pointer to NULL.
 /// \param cl A ChunkList.

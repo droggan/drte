@@ -18,9 +18,10 @@ struct ChunkList {
 };
 
 struct ChunkListItem {
-	size_t segment;
+	Chunk *segment;
 	size_t start;
 	size_t length;
+	size_t chunk_size;
 };
 
 static Chunk * new_chunk(ChunkList *cl);
@@ -78,9 +79,10 @@ chunk_list_insert(ChunkList *cl, char *text) {
 	if (item == NULL) {
 		return NULL;
 	}
-	item->segment = segment;
+	item->segment = c;
 	item->start = c->filled;
 	item->length = length;
+	item->chunk_size = cl->chunk_size;
 
 	size_t written = 0;
 	while (written < length) {
@@ -101,20 +103,15 @@ chunk_list_insert(ChunkList *cl, char *text) {
 }
 
 char *
-chunk_list_get_item(ChunkList *cl, ChunkListItem *item) {
-	Chunk *c = cl->first;
-	size_t segment = 0;
-	size_t chunk_size = cl->chunk_size;
+chunk_list_get_item(ChunkListItem *item) {
+	Chunk *c = item->segment;
+	size_t chunk_size = item->chunk_size;
 
 	char *buffer = malloc(item->length + 1);
 	if (buffer == NULL) {
 		return NULL;
 	}
 
-	while (item->segment != segment) {
-		c = c->next;
-		segment++;
-	}
 	size_t written = 0;
 	size_t index = item->start;
 	while (written < item->length) {
