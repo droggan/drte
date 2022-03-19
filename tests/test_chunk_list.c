@@ -19,9 +19,9 @@ test_chunk_list(void) {
 	test_assert_not_null(item2);
 	test_assert_not_null(item3);
 
-	char *string1 = chunk_list_get_item(cl, item1);
-	char *string2 = chunk_list_get_item(cl, item2);
-	char *string3 = chunk_list_get_item(cl, item3);
+	char *string1 = chunk_list_get_item(item1);
+	char *string2 = chunk_list_get_item(item2);
+	char *string3 = chunk_list_get_item(item3);
 
 	test_assert_str_eql(string1, "lorem");
 	test_assert_str_eql(string2, "ipsum");
