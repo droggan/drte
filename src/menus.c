@@ -143,9 +143,17 @@ file_chooser_draw_func(Editor *e) {
 		display_set_color(OFF);
 	}
 
+	display_set_color(BACKGROUND_BLUE);
+	size_t col = display_show_string(*b->statusbar_win, 0, 0, "Choose a file");
+	while (col < b->statusbar_win->size.columns) {
+		display_show_cp(*b->statusbar_win, 0, col, " ");
+		col++;
+	}
+	display_set_color(OFF);
+
 	display_clear_window(*b->messagebar_win);
 
-	size_t col = display_show_string(*b->messagebar_win, 0, 0, "File: ");
+	col = display_show_string(*b->messagebar_win, 0, 0, "File: ");
 	display_show_string(*b->messagebar_win, 0, col, text);
 	display_move_cursor(*b->messagebar_win, b->cursor.line, b->cursor.column + col);
 
