@@ -10,6 +10,7 @@ Currently implemented:
     - macros
     - hightlight trailing whitespace
     - force newline on save
+    - file and buffer choosers
 
 Dependencies
     - A C99 compiler
