@@ -682,6 +682,7 @@ prefix(Editor *e) {
 	case KEY_CTRL_K: uf = &uf_close_buffer; break;
 	case KEY_CTRL_N: uf = &uf_previous_buffer; break;
 	case KEY_CTRL_O: uf = &uf_openfile; break;
+	case KEY_CTRL_B: uf = &uf_switch_buffer; break;
 	case KEY_CTRL_P: uf = &uf_next_buffer; break;
 	case KEY_CTRL_S: uf = &uf_save; break;
 	case KEY_CTRL_W: uf = &uf_save_as; break;
@@ -705,6 +706,24 @@ openfile(Editor *e) {
 			e->current_buffer->redraw = true;
 			editor_show_message(e, text);
 		}
+	}
+}
+
+void
+switch_buffer(Editor *e) {
+	char *text = menu_choose_buffer(e);
+	Buffer *start = e->current_buffer;
+	if (text == NULL) {
+		editor_show_message(e, "Cancel");
+	} else {
+		while (strcmp(e->current_buffer->filename, text) != 0) {
+			e->current_buffer = e->current_buffer->next;
+			if (e->current_buffer == start) {
+				editor_show_message(e, "Buffer not found");
+				break;
+			}
+		}
+		free(text);
 	}
 }
 

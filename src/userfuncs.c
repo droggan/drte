@@ -246,6 +246,13 @@ UserFunc uf_openfile = {
 	.func = openfile
 };
 
+UserFunc uf_switch_buffer = {
+	.type = USER_FUNC_MANAGEMENT,
+	.name = "switch_buffer",
+	.description = "Switch to a different buffer.",
+	.func = switch_buffer
+};
+
 UserFunc uf_save = {
 	.type = USER_FUNC_MANAGEMENT,
 	.name = "save",

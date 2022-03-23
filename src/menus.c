@@ -26,6 +26,8 @@ static MenuItem *menu_item_list_insert(MenuItemList *list, char *item, bool is_d
 static void free_menu_item_list(MenuItemList **list);
 static void file_chooser_draw_func(Editor *b);
 static Buffer *make_file_chooser_buffer(Editor *e);
+static void buffer_chooser_draw_func(Editor *b);
+static Buffer *make_buffer_chooser_buffer(Editor *e);
 static void yes_no_draw_func(Editor *e);
 static Buffer *make_yes_no_buffer(Editor *e);
 
@@ -406,6 +408,199 @@ menu_choose_file(Editor *e) {
 	e->current_buffer->redraw = true;
 
 	return ret;
+}
+
+static void
+buffer_chooser_draw_func(Editor *e) {
+	Buffer *b = e->current_buffer;
+	char *text = gbf_text(b->gbuf);
+	size_t text_len = strlen(text);
+	size_t lines = b->win->size.lines;
+	size_t line = 0;
+	MenuItemList *items = b->menu_items;
+	size_t first_visible = 0;
+	size_t selected = 0;
+
+	if (b->has_changed) {
+		items->selected = NULL;
+		items->first_visible_item = NULL;
+		b->has_changed = false;
+	}
+	// Scroll up/down, if necessary.
+	if (items->selected != NULL) {
+		MenuItem *iter = b->menu_items->first;
+		size_t i = 0;
+
+		// Measure the distance between the first visible item and the selected item.
+		while(iter != NULL) {
+			if (iter == items->first_visible_item) {
+				first_visible = i;
+			} else if (iter == items->selected) {
+				selected = i;
+			}
+			i++;
+			iter = iter->next;
+		}
+		if (first_visible < selected) {
+			size_t dist = selected - first_visible;
+			// If the distance is bigger than the window size,
+			// the selected item is offscreen and we need to scroll down.
+			while (dist >= b->win->size.lines) {
+				items->first_visible_item = items->first_visible_item->next;
+				dist--;
+			}
+		} else if (first_visible > selected) {
+			// If the selected item is above the screen, we simply
+			// set the first visible item  to the selected item.
+			items->first_visible_item = items->selected;
+		}
+	}
+
+	MenuItem *item = items->first;
+	while (item != NULL) {
+		char *item_text = chunk_list_get_item(item->item);
+		if (strncmp(text, item_text, text_len) == 0) {
+			item->is_visible = true;
+		} else {
+			item->is_visible = false;
+		}
+		free(item_text);
+		item = item->next;
+	}
+
+	MenuItem *current = b->menu_items->first;
+	display_clear_window(*b->win);
+	while ((current != NULL) && (line < lines)) {
+		if (current->is_visible) {
+			char *item_text = chunk_list_get_item(current->item);
+			if (items->first_visible_item == NULL) {
+				items->first_visible_item = current;
+			}
+			if (current == b->menu_items->selected) {
+				display_set_color(BACKGROUND_GREEN);
+				display_set_color(FOREGROUND_BLACK);
+			}
+			display_show_string(*b->win, line, 0, item_text);
+			line++;
+			display_set_color(OFF);
+			free(item_text);
+		}
+		current = current->next;
+	}
+	display_set_color(BACKGROUND_BLUE);
+	size_t col = display_show_string(*b->statusbar_win, 0, 0, "Choose a buffer");
+	while (col < b->statusbar_win->size.columns) {
+		display_show_cp(*b->statusbar_win, 0, col, " ");
+		col++;
+	}
+	display_set_color(OFF);
+
+	display_clear_window(*b->messagebar_win);
+
+	col = display_show_string(*b->messagebar_win, 0, 0, "Buffer: ");
+	display_show_string(*b->messagebar_win, 0, col, text);
+	display_move_cursor(*b->messagebar_win, b->cursor.line, b->cursor.column + col);
+
+	free(text);
+	display_refresh();
+}
+
+static Buffer *
+make_buffer_chooser_buffer(Editor *e) {
+	Buffer *buf = malloc(sizeof(*buf));
+	if (buf == NULL) {
+		editor_show_message(e, "Out of memory");
+		return NULL;
+	}
+
+	memset(buf, 0, sizeof(*buf));
+
+	buf->gbuf = gbf_new();
+	if (buf->gbuf == NULL) {
+		editor_show_message(e, "Out of memory");
+		return NULL;
+	}
+
+	buf->redraw = 1;
+	buf->draw = buffer_chooser_draw_func;
+	buf->draw_statusbar = editor_draw_statusbar;
+
+	buf->position.line = 1;
+	buf->position.column = 1;
+
+	buf->win = &e->window;
+	buf->statusbar_win = &e->statusbar_win;
+	buf->messagebar_win = &e->messagebar_win;
+
+	buf->next = buf;
+	buf->prev = buf;
+
+	buf->funcs[KEY_CTRL_A] = &uf_bol;
+	buf->funcs[KEY_CTRL_B] = &uf_left;
+	buf->funcs[KEY_CTRL_C] = &uf_cancel;
+	buf->funcs[KEY_CTRL_D] = &uf_delete;
+	buf->funcs[KEY_CTRL_E] = &uf_eol;
+	buf->funcs[KEY_CTRL_F] = &uf_right;
+	buf->funcs[KEY_CTRL_H] = &uf_backspace;
+	buf->funcs[KEY_CTRL_I] = &uf_menu_tab;
+	buf->funcs[KEY_CTRL_M] = &uf_ok;
+	buf->funcs[KEY_CTRL_N] = &uf_menu_down;
+	buf->funcs[KEY_CTRL_P] = &uf_menu_up;
+	buf->funcs[KEY_CTRL_Z] = &uf_suspend;
+
+	buf->funcs[KEY_UP] = &uf_menu_up;
+	buf->funcs[KEY_DOWN] = &uf_menu_down;
+	buf->funcs[KEY_LEFT] = &uf_left;
+	buf->funcs[KEY_RIGHT] = &uf_right;
+
+	buf->funcs[KEY_HOME] = &uf_bol;
+	buf->funcs[KEY_END] = &uf_eol;
+
+	buf->funcs[KEY_BACKSPACE] = &uf_backspace;
+	buf->funcs[KEY_DELETE] = &uf_delete;
+	buf->funcs[KEY_RESIZE] = &uf_resize;
+
+	return buf;
+}
+
+char *
+menu_choose_buffer(Editor *e) {
+	Buffer *b = make_buffer_chooser_buffer(e);
+	Buffer *tmp = e->current_buffer;
+	Buffer *iter = e->current_buffer;
+	char *selected = NULL;
+
+	e->current_buffer = b;
+
+	MenuItemList *list = new_menu_item_list();
+	do {
+		iter = iter->next;
+		if (iter->filename != NULL) {
+			menu_item_list_insert(list, iter->filename, false);
+		}
+	} while (iter != tmp);
+	list->first = item_list_sort(list->first);
+	list->first_visible_item = list->first;
+
+	b->menu_items = list;
+
+	editor_loop(e);
+
+	if (b->cancel) {
+		selected = NULL;
+	} else {
+		if (list->selected != NULL) {
+			selected = chunk_list_get_item(list->selected->item);
+		} else {
+			selected = gbf_text(e->current_buffer->gbuf);
+		}
+	}
+	free_menu_item_list(&list);
+	buffer_free(&b);
+	e->current_buffer = tmp;
+	e->current_buffer->redraw = true;
+
+	return selected;
 }
 
 static void

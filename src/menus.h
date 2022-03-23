@@ -35,6 +35,11 @@ typedef struct MenuItemList {
 /// \return The selected file, or NULL when the user cancelled the menu.
 char *menu_choose_file(struct Editor *e);
 
+/// menu_choose_buffer shows a buffer chooser.
+/// \param e The editor structure.
+/// return The selected buffer, or NULL when the user cancelled the menu.
+char *menu_choose_buffer(struct Editor *e);
+
 /// menu_yes_no shows a menu, that will only allow yes or no as answer.
 /// \param e The editor structure.
 /// \param prompt The prompt to show to the user.

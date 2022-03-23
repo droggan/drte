@@ -40,6 +40,7 @@ void ok(struct Editor *e);
 void cancel(struct Editor *e);
 void prefix(struct Editor *e);
 void openfile(struct Editor *e);
+void switch_buffer(struct Editor *e);
 void save(struct Editor *e);
 void save_as(struct Editor *e);
 void close_buffer(struct Editor *e);
