@@ -154,6 +154,7 @@ toggle_show_hidden_files(Editor *e) {
 	} else {
 		e->current_buffer->show_hidden_files = true;
 	}
+	e->current_buffer->has_changed = true;
 }
 
 // Scrolls up by one line. Returns 1 on success, 0 on failure.
