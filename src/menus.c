@@ -387,8 +387,9 @@ menu_choose_file(Editor *e) {
 			free(selected);
 
 			cp = gbf_text(path);
-			stat(cp, &st);
-			if (S_ISDIR(st.st_mode)) {
+
+			int res = stat(cp, &st);
+			if (res == 0 && S_ISDIR(st.st_mode)) {
 				b->ok = false;
 			}
 			free(cp);
