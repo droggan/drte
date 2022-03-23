@@ -27,6 +27,7 @@ extern UserFunc uf_left;
 extern UserFunc uf_right;
 extern UserFunc uf_menu_up;
 extern UserFunc uf_menu_down;
+extern UserFunc uf_toggle_show_hidden_files;
 extern UserFunc uf_up;
 extern UserFunc uf_down;
 extern UserFunc uf_bol;

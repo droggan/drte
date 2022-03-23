@@ -116,6 +116,15 @@ menu_down(Editor *e) {
 	}
 }
 
+void
+toggle_show_hidden_files(Editor *e) {
+	if (e->current_buffer->show_hidden_files) {
+		e->current_buffer->show_hidden_files = false;
+	} else {
+		e->current_buffer->show_hidden_files = true;
+	}
+}
+
 // Scrolls up by one line. Returns 1 on success, 0 on failure.
 static int
 scroll_up(Buffer *b) {

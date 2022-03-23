@@ -60,6 +60,7 @@ Keybindings:
     close-bufffer     PF Ctrl-k    F8
     quit              PF Ctrl-c    F10
     open-file         PF Ctrl-o
+        show hidden files     Alt-h
     previous-buffer   PF Ctrl-p
     next-buffer       PF Ctrl-n
     save              PF Ctrl-s

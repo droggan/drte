@@ -75,6 +75,7 @@ typedef struct Buffer {
 	size_t first_visible_char; ///< The start of the first visible line.
 
 	MenuItemList *menu_items;  ///< Used by various menus to store the menu items.
+	bool show_hidden_files; ///< True, if the file chooser shows hidden files.
 
 	struct Buffer *next; ///< The next buffer.
 	struct Buffer *prev; ///< The previous buffer.

@@ -11,6 +11,7 @@ void delete(struct Editor *e);
 void backspace(struct Editor *e);
 void menu_up(struct Editor *e);
 void menu_down(struct Editor *e);
+void toggle_show_hidden_files(struct Editor *e);
 void left(struct Editor *e);
 void right(struct Editor *e);
 void up(struct Editor *e);

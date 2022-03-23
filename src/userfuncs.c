@@ -64,6 +64,13 @@ UserFunc uf_menu_down = {
 	.func = menu_down
 };
 
+UserFunc uf_toggle_show_hidden_files = {
+	.type = USER_FUNC_MANAGEMENT,
+	.name = "toggle_show_hidden_files.",
+	.description = "Show/hide hidden files.",
+	.func = toggle_show_hidden_files
+};
+
 UserFunc uf_up = {
 	.type = USER_FUNC_MOVEMENT,
 	.name = "up",

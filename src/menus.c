@@ -209,11 +209,14 @@ file_chooser_draw_func(Editor *e) {
 		}
 	}
 
-	MenuItem *item = items->first;
+	b->menu_items->first->is_visible = true;
+	MenuItem *item = items->first->next;
 	while (item != NULL) {
 		char *item_text = chunk_list_get_item(item->item);
 
-		if (strncmp(text, item_text, text_len) == 0) {
+		if (!b->show_hidden_files && item_text[0] == '.') {
+			item->is_visible = false;
+		} else if (strncmp(text, item_text, text_len) == 0) {
 			item->is_visible = true;
 		} else {
 			item->is_visible = false;
@@ -304,6 +307,8 @@ make_file_chooser_buffer(Editor *e) {
 	buf->funcs[KEY_CTRL_N] = &uf_menu_down;
 	buf->funcs[KEY_CTRL_P] = &uf_menu_up;
 	buf->funcs[KEY_CTRL_Z] = &uf_suspend;
+
+	buf->funcs[KEY_ALT_H] = &uf_toggle_show_hidden_files;
 
 	buf->funcs[KEY_UP] = &uf_menu_up;
 	buf->funcs[KEY_DOWN] = &uf_menu_down;
