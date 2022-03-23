@@ -16,6 +16,7 @@ typedef enum {
 typedef struct MenuItem {
 	ChunkListItem *item; ///< The actual item.
 	bool is_dir; ///< True, if item is a directory.
+	bool is_visible; ///< True, if the item is visible.
 	struct MenuItem *next; ///< The next item in the menu list.
 	struct MenuItem *prev; ///< The previous item in the menu list.
 } MenuItem;

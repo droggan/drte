@@ -76,10 +76,19 @@ menu_up(Editor *e) {
 	MenuItemList *items = b->menu_items;
 
 	if (items->selected == NULL) {
-		items->selected = items->first;
+		items->selected = items->first_visible_item;
 	} else {
-		if (b->menu_items->selected->prev != NULL) {
+		MenuItem *start = b->menu_items->selected;
+		bool found = false;
+		while (b->menu_items->selected->prev != NULL) {
 			b->menu_items->selected = b->menu_items->selected->prev;
+			if (b->menu_items->selected->is_visible) {
+				found = true;
+				break;
+			}
+		}
+		if (!found) {
+			b->menu_items->selected = start;
 		}
 	}
 }
@@ -92,8 +101,17 @@ menu_down(Editor *e) {
 	if (items->selected == NULL) {
 		items->selected = items->first_visible_item;
 	} else {
-		if (items->selected->next != NULL) {
-			items->selected = items->selected->next;
+		MenuItem *start = b->menu_items->selected;
+		bool found = false;
+		while (b->menu_items->selected->next != NULL) {
+			b->menu_items->selected = b->menu_items->selected->next;
+			if (b->menu_items->selected->is_visible) {
+				found = true;
+				break;
+			}
+		}
+		if (!found) {
+			b->menu_items->selected = start;
 		}
 	}
 }

@@ -167,12 +167,18 @@ static void
 file_chooser_draw_func(Editor *e) {
 	Buffer *b = e->current_buffer;
 	char *text = gbf_text(b->gbuf);
+	size_t text_len = strlen(text);
 	size_t lines = b->win->size.lines;
 	size_t line = 0;
 	MenuItemList *items = b->menu_items;
 	size_t first_visible = 0;
 	size_t selected = 0;
 
+	if (b->has_changed) {
+		items->selected = NULL;
+		items->first_visible_item = NULL;
+		b->has_changed = false;
+	}
 	// Scroll up/down, if necessary.
 	if (items->selected != NULL) {
 		MenuItem *iter = b->menu_items->first;
@@ -203,26 +209,41 @@ file_chooser_draw_func(Editor *e) {
 		}
 	}
 
-	MenuItem *current = b->menu_items->first_visible_item;
-	display_clear_window(*b->win);
-	while ((current != NULL) && (line < lines)) {
-		char *item_text = chunk_list_get_item(current->item);
-		// TODO: if match show else continue
-		if (current == b->menu_items->selected) {
-			display_set_color(BACKGROUND_GREEN);
-			display_set_color(FOREGROUND_BLACK);
-		}
+	MenuItem *item = items->first;
+	while (item != NULL) {
+		char *item_text = chunk_list_get_item(item->item);
 
-		size_t drawn = display_show_string(*b->win, line, 0, item_text);
-		if (current->is_dir) {
-			display_show_string(*b->win, line, drawn, "/");
+		if (strncmp(text, item_text, text_len) == 0) {
+			item->is_visible = true;
+		} else {
+			item->is_visible = false;
 		}
 		free(item_text);
-		line++;
-		current = current->next;
-		display_set_color(OFF);
+		item = item->next;
 	}
 
+	MenuItem *current = b->menu_items->first;
+	display_clear_window(*b->win);
+	while ((current != NULL) && (line < lines)) {
+		if (current->is_visible) {
+			char *item_text = chunk_list_get_item(current->item);
+			if (items->first_visible_item == NULL) {
+				items->first_visible_item = current;
+			}
+			if (current == b->menu_items->selected) {
+				display_set_color(BACKGROUND_GREEN);
+				display_set_color(FOREGROUND_BLACK);
+			}
+			size_t drawn = display_show_string(*b->win, line, 0, item_text);
+			if (current->is_dir) {
+				display_show_string(*b->win, line, drawn, "/");
+			}
+			line++;
+			display_set_color(OFF);
+			free(item_text);
+		}
+		current = current->next;
+	}
 	display_set_color(BACKGROUND_BLUE);
 	size_t col = display_show_string(*b->statusbar_win, 0, 0, "Choose a file");
 	while (col < b->statusbar_win->size.columns) {
