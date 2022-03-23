@@ -117,6 +117,37 @@ menu_down(Editor *e) {
 }
 
 void
+menu_tab(Editor *e) {
+	Buffer *b = e->current_buffer;
+	MenuItem *start = b->menu_items->selected;
+	bool found = false;
+
+	if (b->menu_items->selected == NULL) {
+		menu_down(e);
+		return;
+	}
+	while (b->menu_items->selected->next != NULL) {
+		b->menu_items->selected = b->menu_items->selected->next;
+		if (b->menu_items->selected->is_visible) {
+			found = true;
+			break;
+		}
+	}
+	if (!found) {
+		b->menu_items->selected = b->menu_items->first;
+
+		while (b->menu_items->selected != start) {
+			if (b->menu_items->selected->is_visible) {
+				found = true;
+				break;
+			}
+			b->menu_items->selected = b->menu_items->selected->next;
+		}
+	}
+
+}
+
+void
 toggle_show_hidden_files(Editor *e) {
 	if (e->current_buffer->show_hidden_files) {
 		e->current_buffer->show_hidden_files = false;

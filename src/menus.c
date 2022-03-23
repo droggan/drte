@@ -209,12 +209,11 @@ file_chooser_draw_func(Editor *e) {
 		}
 	}
 
-	b->menu_items->first->is_visible = true;
-	MenuItem *item = items->first->next;
+	MenuItem *item = items->first;
 	while (item != NULL) {
 		char *item_text = chunk_list_get_item(item->item);
 
-		if (!b->show_hidden_files && item_text[0] == '.') {
+		if (!b->show_hidden_files && item_text[0] == '.' && strcmp(item_text, "..") != 0) {
 			item->is_visible = false;
 		} else if (strncmp(text, item_text, text_len) == 0) {
 			item->is_visible = true;
@@ -302,7 +301,7 @@ make_file_chooser_buffer(Editor *e) {
 	buf->funcs[KEY_CTRL_E] = &uf_eol;
 	buf->funcs[KEY_CTRL_F] = &uf_right;
 	buf->funcs[KEY_CTRL_H] = &uf_backspace;
-	buf->funcs[KEY_CTRL_I] = &uf_tab;
+	buf->funcs[KEY_CTRL_I] = &uf_menu_tab;
 	buf->funcs[KEY_CTRL_M] = &uf_ok;
 	buf->funcs[KEY_CTRL_N] = &uf_menu_down;
 	buf->funcs[KEY_CTRL_P] = &uf_menu_up;

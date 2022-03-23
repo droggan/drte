@@ -64,6 +64,13 @@ UserFunc uf_menu_down = {
 	.func = menu_down
 };
 
+UserFunc uf_menu_tab = {
+	.type = USER_FUNC_MOVEMENT,
+	.name = "menu_tab",
+	.description = "Cycle through matching menu items.",
+	.func = menu_tab
+};
+
 UserFunc uf_toggle_show_hidden_files = {
 	.type = USER_FUNC_MANAGEMENT,
 	.name = "toggle_show_hidden_files.",
