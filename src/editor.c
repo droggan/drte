@@ -69,7 +69,7 @@ editor_loop_once(Editor *e) {
 		e->current_buffer->draw(e);
 	}
 
-	c = input_get(input);
+	c = input_get(input, 0);
 	e->string_arg = input;
 
 	editor_call_userfunc(e, c);

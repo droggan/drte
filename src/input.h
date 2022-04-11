@@ -100,6 +100,8 @@ typedef enum {
 
 	KEY_RESIZE,
 
+	KEY_TIMEOUT,
+
 	KEY_SPECIAL_MAX,
 	KEY_N_SPECIAL_KEYS = KEY_SPECIAL_MAX - KEY_SPECIAL_MIN,
 
@@ -108,6 +110,6 @@ typedef enum {
 } KeyCode;
 
 KeyCode input_check(char *input);
-KeyCode input_get(char *input);
+KeyCode input_get(char *input, size_t timeout);
 
 #endif

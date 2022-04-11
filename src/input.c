@@ -8,7 +8,7 @@
 
 #include "utf8.h"
 #include "input.h"
-
+#include "display.h"
 
 // Different terminal produce diffent sequences.
 // Sequences:
@@ -143,8 +143,15 @@ input_check(char *input) {
 }
 
 KeyCode
-input_get(char *input) {
+input_get(char *input, size_t timeout) {
+	if (timeout != 0) {
+		display_set_timeout(timeout);
+	}
 	int ret = read(1, input, 10);
+	if (ret == 0) {
+		display_clear_timeout();
+		return KEY_TIMEOUT;
+	}
 	if (ret == -1) {
 		if (errno == EINTR) {
 			return KEY_RESIZE;

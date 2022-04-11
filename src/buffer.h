@@ -77,6 +77,8 @@ typedef struct Buffer {
 	MenuItemList *menu_items;  ///< Used by various menus to store the menu items.
 	bool show_hidden_files; ///< True, if the file chooser shows hidden files.
 
+	bool timeout; ///< True, if something timed out.
+
 	struct Buffer *next; ///< The next buffer.
 	struct Buffer *prev; ///< The previous buffer.
 } Buffer;

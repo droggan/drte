@@ -232,6 +232,13 @@ UserFunc uf_cancel = {
 	.func = cancel
 };
 
+UserFunc uf_timeout = {
+	.type = USER_FUNC_MANAGEMENT,
+	.name = "timeout",
+	.description = "", // TODO
+	.func = timeout
+};
+
 UserFunc uf_prefix = {
 	.type = USER_FUNC_MANAGEMENT,
 	.name = "prefix",

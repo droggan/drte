@@ -93,6 +93,13 @@ void display_to_alt_screen(void);
 /// display_from_alt_screen commands the terminal to not use the alternate buffer.
 void display_from_alt_screen(void);
 
+/// display_set_timeout sets the timeout for read.
+/// \param timout The timeout in deciseconds.
+void display_set_timeout(size_t timeout);
+
+/// display_clear_timeout removes the timeout for read.
+void display_clear_timeout(void);
+
 /// display_clear clears the display.
 void display_clear(void);
 

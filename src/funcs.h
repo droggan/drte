@@ -38,6 +38,7 @@ void resize(struct Editor *e);
 void suspend(struct Editor *e);
 void ok(struct Editor *e);
 void cancel(struct Editor *e);
+void timeout(struct Editor *e);
 void prefix(struct Editor *e);
 void openfile(struct Editor *e);
 void switch_buffer(struct Editor *e);

@@ -670,6 +670,11 @@ cancel(Editor *e) {
 }
 
 void
+timeout(Editor *e) {
+	e->current_buffer->timeout = true;
+}
+
+void
 prefix(Editor *e) {
 	char input[32] = {0};
 	KeyCode c;

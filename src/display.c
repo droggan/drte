@@ -79,6 +79,20 @@ display_from_alt_screen(void) {
 }
 
 void
+display_set_timeout(size_t timeout) {
+	config.c_cc[VTIME] = timeout;
+	config.c_cc[VMIN] = 0;
+	tcsetattr(terminal, TCSANOW, &config);
+}
+
+void
+display_clear_timeout(void) {
+	config.c_cc[VTIME] = 0;
+	config.c_cc[VMIN] = 1;
+	tcsetattr(terminal, TCSANOW, &config);
+}
+
+void
 display_clear(void) {
 	printf("\x1B[2J");
 }
