@@ -683,13 +683,14 @@ prefix_draw_func(Editor *e) {
 		display_clear_window(*b->messagebar_win);
 		display_clear_window(*b->win);
 		display_show_string(*b->win, 0, 0, "Ctrl+B Switch Buffer");
-		display_show_string(*b->win, 1, 0, "Ctrl+C Quit");
+		display_show_string(*b->win, 1, 0, "Ctrl+C Cancel");
 		display_show_string(*b->win, 2, 0, "Ctrl+K Close Buffer");
 		display_show_string(*b->win, 3, 0, "Ctrl+N Previous Buffer");
 		display_show_string(*b->win, 4, 0, "Ctrl+O Open File");
 		display_show_string(*b->win, 5, 0, "Ctrl+P Next Buffer");
-		display_show_string(*b->win, 6, 0, "Ctrl+S Save");
-		display_show_string(*b->win, 7, 0, "Ctrl+W Save As");
+		display_show_string(*b->win, 6, 0, "Ctrl+Q Quit");
+		display_show_string(*b->win, 7, 0, "Ctrl+S Save");
+		display_show_string(*b->win, 8, 0, "Ctrl+W Save As");
 	} else {
 		display_show_string(*b->messagebar_win, 0, 0, "Prefix");
 		display_move_cursor(*b->win, b->position.line - 1, b->position.column - 1);
@@ -722,11 +723,12 @@ make_prefix_buffer(Editor *e) {
 	buf->prev = buf;
 
 	buf->funcs[KEY_CTRL_B] = &uf_switch_buffer;
-	buf->funcs[KEY_CTRL_C] = &uf_quit;
+	buf->funcs[KEY_CTRL_C] = &uf_cancel;
 	buf->funcs[KEY_CTRL_K] = &uf_close_buffer;
 	buf->funcs[KEY_CTRL_N] = &uf_previous_buffer;
 	buf->funcs[KEY_CTRL_O] = &uf_openfile;
 	buf->funcs[KEY_CTRL_P] = &uf_next_buffer;
+	buf->funcs[KEY_CTRL_Q] = &uf_quit;
 	buf->funcs[KEY_CTRL_S] = &uf_save;
 	buf->funcs[KEY_CTRL_W] = &uf_save_as;
 
@@ -763,8 +765,9 @@ prefix(Editor *e) {
 		}
 	} while (!b->cancel);
 
-	e->current_buffer = tmp;
 	buffer_free(&b);
+	e->current_buffer->cancel = false;
+	e->current_buffer->redraw = true;
 }
 
 void
