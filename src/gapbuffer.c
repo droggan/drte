@@ -73,6 +73,9 @@ gbf_new(void) {
 
 void
 gbf_free(GapBuffer **gbuf) {
+	if (*gbuf == NULL) {
+		return;
+	}
 	free((*gbuf)->first);
 	free(*gbuf);
 	*gbuf = NULL;
