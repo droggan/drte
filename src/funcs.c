@@ -674,28 +674,91 @@ timeout(Editor *e) {
 	e->current_buffer->timeout = true;
 }
 
+static void
+prefix_draw_func(Editor *e) {
+	Buffer *b = e->current_buffer;
+
+	if (b->timeout) {
+		// TODO: generate from key bindings and UserFuncs
+		display_clear_window(*b->messagebar_win);
+		display_clear_window(*b->win);
+		display_show_string(*b->win, 0, 0, "Ctrl+B Switch Buffer");
+		display_show_string(*b->win, 1, 0, "Ctrl+C Quit");
+		display_show_string(*b->win, 2, 0, "Ctrl+K Close Buffer");
+		display_show_string(*b->win, 3, 0, "Ctrl+N Previous Buffer");
+		display_show_string(*b->win, 4, 0, "Ctrl+O Open File");
+		display_show_string(*b->win, 5, 0, "Ctrl+P Next Buffer");
+		display_show_string(*b->win, 6, 0, "Ctrl+S Save");
+		display_show_string(*b->win, 7, 0, "Ctrl+W Save As");
+	} else {
+		display_show_string(*b->messagebar_win, 0, 0, "Prefix");
+	}
+	display_refresh();
+}
+
+static Buffer *
+make_prefix_buffer(Editor *e) {
+	Buffer *buf = malloc(sizeof(*buf));
+	if (buf == NULL) {
+		editor_show_message(e, "Out of memory");
+		return NULL;
+	}
+
+	memset(buf, 0, sizeof(*buf));
+
+	buf->redraw = 1;
+	buf->draw = prefix_draw_func;
+	buf->draw_statusbar = editor_draw_statusbar;
+
+	buf->position.line = 1;
+	buf->position.column = 1;
+
+	buf->win = &e->window;
+	buf->statusbar_win = &e->statusbar_win;
+	buf->messagebar_win = &e->messagebar_win;
+
+	buf->next = buf;
+	buf->prev = buf;
+
+	buf->funcs[KEY_CTRL_B] = &uf_switch_buffer;
+	buf->funcs[KEY_CTRL_C] = &uf_quit;
+	buf->funcs[KEY_CTRL_K] = &uf_close_buffer;
+	buf->funcs[KEY_CTRL_N] = &uf_previous_buffer;
+	buf->funcs[KEY_CTRL_O] = &uf_openfile;
+	buf->funcs[KEY_CTRL_P] = &uf_next_buffer;
+	buf->funcs[KEY_CTRL_S] = &uf_save;
+	buf->funcs[KEY_CTRL_W] = &uf_save_as;
+
+	buf->funcs[KEY_TIMEOUT] = &uf_timeout;
+
+	return buf;
+}
+
 void
 prefix(Editor *e) {
 	char input[32] = {0};
 	KeyCode c;
 	UserFunc *uf = NULL;
+	Buffer *b = make_prefix_buffer(e);
+	Buffer *tmp = e->current_buffer;
 
-	c = input_get(input);
+	e->current_buffer = b;
+	do {
+		prefix_draw_func(e);
+		c = input_get(input, 5);
 
-	switch(c) {
-	case KEY_CTRL_C: uf = &uf_quit; break;
-	case KEY_CTRL_K: uf = &uf_close_buffer; break;
-	case KEY_CTRL_N: uf = &uf_previous_buffer; break;
-	case KEY_CTRL_O: uf = &uf_openfile; break;
-	case KEY_CTRL_B: uf = &uf_switch_buffer; break;
-	case KEY_CTRL_P: uf = &uf_next_buffer; break;
-	case KEY_CTRL_S: uf = &uf_save; break;
-	case KEY_CTRL_W: uf = &uf_save_as; break;
-	}
-	if (uf != NULL) {
-		uf->func(e);
-		e->current_buffer->prev_func = uf;
-	}
+		uf = b->funcs[c];
+		if (uf != NULL) {
+			if (c != KEY_TIMEOUT) {
+				b->cancel = true;
+			}
+			e->current_buffer = tmp;
+			uf->func(e);
+		}
+	} while (!b->cancel);
+
+	e->current_buffer = tmp;
+	buffer_free(&b);
 }
 
 void
