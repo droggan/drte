@@ -93,6 +93,16 @@ display_clear_timeout(void) {
 }
 
 void
+display_show_cursor(void) {
+	printf("\x1B[?25h");
+}
+
+void
+display_hide_cursor(void) {
+	printf("\x1B[?25l");
+}
+
+void
 display_clear(void) {
 	printf("\x1B[2J");
 }

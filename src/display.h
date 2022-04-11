@@ -100,6 +100,12 @@ void display_set_timeout(size_t timeout);
 /// display_clear_timeout removes the timeout for read.
 void display_clear_timeout(void);
 
+/// display_show_cursor will cause the display to draw the cursor.
+void display_show_cursor(void);
+
+/// display_hide_cursor will prevent the display from drawing the cursor.
+void display_hide_cursor(void);
+
 /// display_clear clears the display.
 void display_clear(void);
 
