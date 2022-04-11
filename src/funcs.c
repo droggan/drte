@@ -692,6 +692,7 @@ prefix_draw_func(Editor *e) {
 		display_show_string(*b->win, 7, 0, "Ctrl+W Save As");
 	} else {
 		display_show_string(*b->messagebar_win, 0, 0, "Prefix");
+		display_move_cursor(*b->win, b->position.line - 1, b->position.column - 1);
 	}
 	display_refresh();
 }
@@ -743,6 +744,7 @@ prefix(Editor *e) {
 	Buffer *tmp = e->current_buffer;
 
 	e->current_buffer = b;
+	b->position = tmp->position;
 	do {
 		prefix_draw_func(e);
 		c = input_get(input, 5);
@@ -751,9 +753,13 @@ prefix(Editor *e) {
 		if (uf != NULL) {
 			if (c != KEY_TIMEOUT) {
 				b->cancel = true;
+				e->current_buffer = tmp;
+				display_show_cursor();
+				uf->func(e);
+			} else {
+				display_hide_cursor();
+				uf->func(e);
 			}
-			e->current_buffer = tmp;
-			uf->func(e);
 		}
 	} while (!b->cancel);
 
