@@ -89,6 +89,22 @@ buffer_bind_key(Buffer *buf, KeyCode c, UserFunc *f) {
 	buf->funcs[key_to_id(c)] = f;
 }
 
+void
+buffer_call_userfunc(Editor *e, Buffer *buf, KeyCode c) {
+	UserFunc *uf = NULL;
+	if (c == KEY_VALID) {
+		uf = &uf_insert;
+	} else if (c >= KEY_SPECIAL_MIN && c <= KEY_SPECIAL_MAX) {
+		uf = buf->funcs[key_to_id(c)];
+	} else {
+		editor_show_message(e, "Unrecognized input");
+	}
+	if (uf != NULL) {
+		uf->func(e);
+		buf->prev_func = uf;
+	}
+}
+
 Buffer *
 buffer_new(Editor *e, char *filename) {
 	Buffer *buf = malloc(sizeof(*buf));

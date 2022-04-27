@@ -95,6 +95,12 @@ Buffer *buffer_new(struct Editor *e, char *filename);
 /// \param f The function.
 void buffer_bind_key(Buffer *buf, KeyCode c, UserFunc *f);
 
+/// buffer_call_userfunc call the function bound to c.
+/// \param e The editor structure.
+/// \param buf The buffer.
+/// \param c The key.
+void buffer_call_userfunc(struct Editor *e, Buffer *buf, KeyCode c);
+
 /// buffer_free frees a buffer and sets the given pointer to NULL.
 /// \param buf The buffer to free.
 void buffer_free(Buffer **buf);

@@ -612,12 +612,12 @@ macro_play(Editor *e) {
 	}
 	while (e->macro_buffer[i] != '\0') {
 		char buffer[32] = {'\0'};
-		KeyCode c;
+		KeyCode c = 0;
 
 		strcpy(buffer, e->macro_buffer + i);
 		//c = input_check(buffer);
 
-		editor_call_userfunc(e, c);
+		buffer_call_userfunc(e, e->current_buffer, c);
 
 		i += strlen(buffer) + 1;
 	}
@@ -722,17 +722,17 @@ make_prefix_buffer(Editor *e) {
 	buf->next = buf;
 	buf->prev = buf;
 
-	buf->funcs[input_key_to_id(KEY_CTRL_B)] = &uf_switch_buffer;
-	buf->funcs[input_key_to_id(KEY_CTRL_C)] = &uf_cancel;
-	buf->funcs[input_key_to_id(KEY_CTRL_K)] = &uf_close_buffer;
-	buf->funcs[input_key_to_id(KEY_CTRL_N)] = &uf_previous_buffer;
-	buf->funcs[input_key_to_id(KEY_CTRL_O)] = &uf_openfile;
-	buf->funcs[input_key_to_id(KEY_CTRL_P)] = &uf_next_buffer;
-	buf->funcs[input_key_to_id(KEY_CTRL_Q)] = &uf_quit;
-	buf->funcs[input_key_to_id(KEY_CTRL_S)] = &uf_save;
-	buf->funcs[input_key_to_id(KEY_CTRL_W)] = &uf_save_as;
+	buffer_bind_key(buf, KEY_CTRL_B, &uf_switch_buffer);
+	buffer_bind_key(buf, KEY_CTRL_C, &uf_cancel);
+	buffer_bind_key(buf, KEY_CTRL_K, &uf_close_buffer);
+	buffer_bind_key(buf, KEY_CTRL_N, &uf_previous_buffer);
+	buffer_bind_key(buf, KEY_CTRL_O, &uf_openfile);
+	buffer_bind_key(buf, KEY_CTRL_P, &uf_next_buffer);
+	buffer_bind_key(buf, KEY_CTRL_Q, &uf_quit);
+	buffer_bind_key(buf, KEY_CTRL_S, &uf_save);
+	buffer_bind_key(buf, KEY_CTRL_W, &uf_save_as);
 
-	buf->funcs[input_key_to_id(KEY_TIMEOUT)] = &uf_timeout;
+	buffer_bind_key(buf, KEY_TIMEOUT, &uf_timeout);
 
 	return buf;
 }
