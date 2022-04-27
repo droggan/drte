@@ -2,7 +2,7 @@
 #define DRTE_INPUT_H
 
 typedef enum {
-	KEY_SPECIAL_MIN,
+	KEY_SPECIAL_MIN = 128,
 	KEY_CTRL_OFFSET = KEY_SPECIAL_MIN,
 	KEY_CTRL_AT = KEY_SPECIAL_MIN,
 	KEY_CTRL_SPACE = KEY_SPECIAL_MIN,
@@ -109,7 +109,13 @@ typedef enum {
 	KEY_VALID,
 } KeyCode;
 
-KeyCode input_check(char *input);
-KeyCode input_get(char *input, size_t timeout);
+
+size_t input_key_to_id(KeyCode c);
+
+/// input_get reads the next symbol from the input stream.
+/// \param buffer An allocated buffer. If the read input is a valid code point,
+///               it will be written into the buffer.
+/// \return A KeyCode representing the input.
+KeyCode input_get(char buffer[]);
 
 #endif

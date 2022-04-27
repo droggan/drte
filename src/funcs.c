@@ -615,7 +615,7 @@ macro_play(Editor *e) {
 		KeyCode c;
 
 		strcpy(buffer, e->macro_buffer + i);
-		c = input_check(buffer);
+		//c = input_check(buffer);
 
 		editor_call_userfunc(e, c);
 
@@ -722,17 +722,17 @@ make_prefix_buffer(Editor *e) {
 	buf->next = buf;
 	buf->prev = buf;
 
-	buf->funcs[KEY_CTRL_B] = &uf_switch_buffer;
-	buf->funcs[KEY_CTRL_C] = &uf_cancel;
-	buf->funcs[KEY_CTRL_K] = &uf_close_buffer;
-	buf->funcs[KEY_CTRL_N] = &uf_previous_buffer;
-	buf->funcs[KEY_CTRL_O] = &uf_openfile;
-	buf->funcs[KEY_CTRL_P] = &uf_next_buffer;
-	buf->funcs[KEY_CTRL_Q] = &uf_quit;
-	buf->funcs[KEY_CTRL_S] = &uf_save;
-	buf->funcs[KEY_CTRL_W] = &uf_save_as;
+	buf->funcs[input_key_to_id(KEY_CTRL_B)] = &uf_switch_buffer;
+	buf->funcs[input_key_to_id(KEY_CTRL_C)] = &uf_cancel;
+	buf->funcs[input_key_to_id(KEY_CTRL_K)] = &uf_close_buffer;
+	buf->funcs[input_key_to_id(KEY_CTRL_N)] = &uf_previous_buffer;
+	buf->funcs[input_key_to_id(KEY_CTRL_O)] = &uf_openfile;
+	buf->funcs[input_key_to_id(KEY_CTRL_P)] = &uf_next_buffer;
+	buf->funcs[input_key_to_id(KEY_CTRL_Q)] = &uf_quit;
+	buf->funcs[input_key_to_id(KEY_CTRL_S)] = &uf_save;
+	buf->funcs[input_key_to_id(KEY_CTRL_W)] = &uf_save_as;
 
-	buf->funcs[KEY_TIMEOUT] = &uf_timeout;
+	buf->funcs[input_key_to_id(KEY_TIMEOUT)] = &uf_timeout;
 
 	return buf;
 }
@@ -747,11 +747,14 @@ prefix(Editor *e) {
 
 	e->current_buffer = b;
 	b->position = tmp->position;
+	display_set_timeout(5);
 	do {
 		prefix_draw_func(e);
-		c = input_get(input, 5);
+		c = input_get(input);
 
-		uf = b->funcs[c];
+		if (c >= KEY_SPECIAL_MIN && c <= KEY_SPECIAL_MAX) {
+			uf = b->funcs[input_key_to_id(c)];
+		}
 		if (uf != NULL) {
 			if (c != KEY_TIMEOUT) {
 				b->cancel = true;
@@ -761,6 +764,7 @@ prefix(Editor *e) {
 			} else {
 				display_hide_cursor();
 				uf->func(e);
+				display_clear_timeout();
 			}
 		}
 	} while (!b->cancel);

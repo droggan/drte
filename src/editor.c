@@ -50,7 +50,7 @@ editor_call_userfunc(Editor *e, KeyCode c) {
 	if (c == KEY_VALID) {
 		uf = &uf_insert;
 	} else if (c >= KEY_SPECIAL_MIN && c <= KEY_SPECIAL_MAX) {
-		uf = e->current_buffer->funcs[c];
+		uf = e->current_buffer->funcs[input_key_to_id(c)];
 	} else {
 		editor_show_message(e, "Unrecognized input");
 	}
@@ -69,7 +69,7 @@ editor_loop_once(Editor *e) {
 		e->current_buffer->draw(e);
 	}
 
-	c = input_get(input, 0);
+	c = input_get(input);
 	e->string_arg = input;
 
 	editor_call_userfunc(e, c);
