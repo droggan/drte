@@ -89,6 +89,12 @@ typedef struct Buffer {
 /// \return A new Buffer or NULL on error.
 Buffer *buffer_new(struct Editor *e, char *filename);
 
+/// buffer_bind_key binds c to the function f, in buf.
+/// \param buf The buffer.
+/// \param c The key.
+/// \param f The function.
+void buffer_bind_key(Buffer *buf, KeyCode c, UserFunc *f);
+
 /// buffer_free frees a buffer and sets the given pointer to NULL.
 /// \param buf The buffer to free.
 void buffer_free(Buffer **buf);

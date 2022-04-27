@@ -296,32 +296,32 @@ make_file_chooser_buffer(Editor *e) {
 	buf->next = buf;
 	buf->prev = buf;
 
-	buf->funcs[input_key_to_id(KEY_CTRL_A)] = &uf_bol;
-	buf->funcs[input_key_to_id(KEY_CTRL_B)] = &uf_left;
-	buf->funcs[input_key_to_id(KEY_CTRL_C)] = &uf_cancel;
-	buf->funcs[input_key_to_id(KEY_CTRL_D)] = &uf_delete;
-	buf->funcs[input_key_to_id(KEY_CTRL_E)] = &uf_eol;
-	buf->funcs[input_key_to_id(KEY_CTRL_F)] = &uf_right;
-	buf->funcs[input_key_to_id(KEY_CTRL_H)] = &uf_backspace;
-	buf->funcs[input_key_to_id(KEY_CTRL_I)] = &uf_menu_tab;
-	buf->funcs[input_key_to_id(KEY_CTRL_M)] = &uf_ok;
-	buf->funcs[input_key_to_id(KEY_CTRL_N)] = &uf_menu_down;
-	buf->funcs[input_key_to_id(KEY_CTRL_P)] = &uf_menu_up;
-	buf->funcs[input_key_to_id(KEY_CTRL_Z)] = &uf_suspend;
+	buffer_bind_key(buf, KEY_CTRL_A, &uf_bol);
+	buffer_bind_key(buf, KEY_CTRL_B, &uf_left);
+	buffer_bind_key(buf, KEY_CTRL_C, &uf_cancel);
+	buffer_bind_key(buf, KEY_CTRL_D, &uf_delete);
+	buffer_bind_key(buf, KEY_CTRL_E, &uf_eol);
+	buffer_bind_key(buf, KEY_CTRL_F, &uf_right);
+	buffer_bind_key(buf, KEY_CTRL_H, &uf_backspace);
+	buffer_bind_key(buf, KEY_CTRL_I, &uf_menu_tab);
+	buffer_bind_key(buf, KEY_CTRL_M, &uf_ok);
+	buffer_bind_key(buf, KEY_CTRL_N, &uf_menu_down);
+	buffer_bind_key(buf, KEY_CTRL_P, &uf_menu_up);
+	buffer_bind_key(buf, KEY_CTRL_Z, &uf_suspend);
 
-	buf->funcs[input_key_to_id(KEY_ALT_H)] = &uf_toggle_show_hidden_files;
+	buffer_bind_key(buf, KEY_ALT_H, &uf_toggle_show_hidden_files);
 
-	buf->funcs[input_key_to_id(KEY_UP)] = &uf_menu_up;
-	buf->funcs[input_key_to_id(KEY_DOWN)] = &uf_menu_down;
-	buf->funcs[input_key_to_id(KEY_LEFT)] = &uf_left;
-	buf->funcs[input_key_to_id(KEY_RIGHT)] = &uf_right;
+	buffer_bind_key(buf, KEY_UP, &uf_menu_up);
+	buffer_bind_key(buf, KEY_DOWN, &uf_menu_down);
+	buffer_bind_key(buf, KEY_LEFT, &uf_left);
+	buffer_bind_key(buf, KEY_RIGHT, &uf_right);
 
-	buf->funcs[input_key_to_id(KEY_HOME)] = &uf_bol;
-	buf->funcs[input_key_to_id(KEY_END)] = &uf_eol;
+	buffer_bind_key(buf, KEY_HOME, &uf_bol);
+	buffer_bind_key(buf, KEY_END, &uf_eol);
 
-	buf->funcs[input_key_to_id(KEY_BACKSPACE)] = &uf_backspace;
-	buf->funcs[input_key_to_id(KEY_DELETE)] = &uf_delete;
-	buf->funcs[input_key_to_id(KEY_RESIZE)] = &uf_resize;
+	buffer_bind_key(buf, KEY_BACKSPACE, &uf_backspace);
+	buffer_bind_key(buf, KEY_DELETE, &uf_delete);
+	buffer_bind_key(buf, KEY_RESIZE, &uf_resize);
 
 	return buf;
 }
@@ -535,30 +535,30 @@ make_buffer_chooser_buffer(Editor *e) {
 	buf->next = buf;
 	buf->prev = buf;
 
-	buf->funcs[input_key_to_id(KEY_CTRL_A)] = &uf_bol;
-	buf->funcs[input_key_to_id(KEY_CTRL_B)] = &uf_left;
-	buf->funcs[input_key_to_id(KEY_CTRL_C)] = &uf_cancel;
-	buf->funcs[input_key_to_id(KEY_CTRL_D)] = &uf_delete;
-	buf->funcs[input_key_to_id(KEY_CTRL_E)] = &uf_eol;
-	buf->funcs[input_key_to_id(KEY_CTRL_F)] = &uf_right;
-	buf->funcs[input_key_to_id(KEY_CTRL_H)] = &uf_backspace;
-	buf->funcs[input_key_to_id(KEY_CTRL_I)] = &uf_menu_tab;
-	buf->funcs[input_key_to_id(KEY_CTRL_M)] = &uf_ok;
-	buf->funcs[input_key_to_id(KEY_CTRL_N)] = &uf_menu_down;
-	buf->funcs[input_key_to_id(KEY_CTRL_P)] = &uf_menu_up;
-	buf->funcs[input_key_to_id(KEY_CTRL_Z)] = &uf_suspend;
+	buffer_bind_key(buf, KEY_CTRL_A, &uf_bol);
+	buffer_bind_key(buf, KEY_CTRL_B, &uf_left);
+	buffer_bind_key(buf, KEY_CTRL_C, &uf_cancel);
+	buffer_bind_key(buf, KEY_CTRL_D, &uf_delete);
+	buffer_bind_key(buf, KEY_CTRL_E, &uf_eol);
+	buffer_bind_key(buf, KEY_CTRL_F, &uf_right);
+	buffer_bind_key(buf, KEY_CTRL_H, &uf_backspace);
+	buffer_bind_key(buf, KEY_CTRL_I, &uf_menu_tab);
+	buffer_bind_key(buf, KEY_CTRL_M, &uf_ok);
+	buffer_bind_key(buf, KEY_CTRL_N, &uf_menu_down);
+	buffer_bind_key(buf, KEY_CTRL_P, &uf_menu_up);
+	buffer_bind_key(buf, KEY_CTRL_Z, &uf_suspend);
 
-	buf->funcs[input_key_to_id(KEY_UP)] = &uf_menu_up;
-	buf->funcs[input_key_to_id(KEY_DOWN)] = &uf_menu_down;
-	buf->funcs[input_key_to_id(KEY_LEFT)] = &uf_left;
-	buf->funcs[input_key_to_id(KEY_RIGHT)] = &uf_right;
+	buffer_bind_key(buf, KEY_UP, &uf_menu_up);
+	buffer_bind_key(buf, KEY_DOWN, &uf_menu_down);
+	buffer_bind_key(buf, KEY_LEFT, &uf_left);
+	buffer_bind_key(buf, KEY_RIGHT, &uf_right);
 
-	buf->funcs[input_key_to_id(KEY_HOME)] = &uf_bol;
-	buf->funcs[input_key_to_id(KEY_END)] =  &uf_eol;
+	buffer_bind_key(buf, KEY_HOME, &uf_bol);
+	buffer_bind_key(buf, KEY_END,  &uf_eol);
 
-	buf->funcs[input_key_to_id(KEY_BACKSPACE)] = &uf_backspace;
-	buf->funcs[input_key_to_id(KEY_DELETE)] = &uf_delete;
-	buf->funcs[input_key_to_id(KEY_RESIZE)] = &uf_resize;
+	buffer_bind_key(buf, KEY_BACKSPACE, &uf_backspace);
+	buffer_bind_key(buf, KEY_DELETE, &uf_delete);
+	buffer_bind_key(buf, KEY_RESIZE, &uf_resize);
 
 	return buf;
 }
@@ -648,26 +648,26 @@ make_yes_no_buffer(Editor *e) {
 	buf->next = buf;
 	buf->prev = buf;
 
-	buf->funcs[input_key_to_id(KEY_CTRL_A)] = &uf_bol;
-	buf->funcs[input_key_to_id(KEY_CTRL_B)] = &uf_left;
-	buf->funcs[input_key_to_id(KEY_CTRL_C)] = &uf_cancel;
-	buf->funcs[input_key_to_id(KEY_CTRL_D)] = &uf_delete;
-	buf->funcs[input_key_to_id(KEY_CTRL_E)] = &uf_eol;
-	buf->funcs[input_key_to_id(KEY_CTRL_F)] = &uf_right;
-	buf->funcs[input_key_to_id(KEY_CTRL_H)] = &uf_backspace;
-	buf->funcs[input_key_to_id(KEY_CTRL_I)] = &uf_tab;
-	buf->funcs[input_key_to_id(KEY_CTRL_M)] = &uf_ok;
-	buf->funcs[input_key_to_id(KEY_CTRL_Z)] = &uf_suspend;
+	buffer_bind_key(buf, KEY_CTRL_A, &uf_bol);
+	buffer_bind_key(buf, KEY_CTRL_B, &uf_left);
+	buffer_bind_key(buf, KEY_CTRL_C, &uf_cancel);
+	buffer_bind_key(buf, KEY_CTRL_D, &uf_delete);
+	buffer_bind_key(buf, KEY_CTRL_E, &uf_eol);
+	buffer_bind_key(buf, KEY_CTRL_F, &uf_right);
+	buffer_bind_key(buf, KEY_CTRL_H, &uf_backspace);
+	buffer_bind_key(buf, KEY_CTRL_I, &uf_tab);
+	buffer_bind_key(buf, KEY_CTRL_M, &uf_ok);
+	buffer_bind_key(buf, KEY_CTRL_Z, &uf_suspend);
 
-	buf->funcs[input_key_to_id(KEY_RIGHT)] = &uf_right;
-	buf->funcs[input_key_to_id(KEY_LEFT)] = &uf_left;
+	buffer_bind_key(buf, KEY_RIGHT, &uf_right);
+	buffer_bind_key(buf, KEY_LEFT, &uf_left);
 
-	buf->funcs[input_key_to_id(KEY_HOME)] = &uf_bol;
-	buf->funcs[input_key_to_id(KEY_END)] = &uf_eol;
+	buffer_bind_key(buf, KEY_HOME, &uf_bol);
+	buffer_bind_key(buf, KEY_END, &uf_eol);
 
-	buf->funcs[input_key_to_id(KEY_BACKSPACE)] = &uf_backspace;
-	buf->funcs[input_key_to_id(KEY_DELETE)] = &uf_delete;
-	buf->funcs[input_key_to_id(KEY_RESIZE)] = &uf_resize;
+	buffer_bind_key(buf, KEY_BACKSPACE, &uf_backspace);
+	buffer_bind_key(buf, KEY_DELETE, &uf_delete);
+	buffer_bind_key(buf, KEY_RESIZE, &uf_resize);
 
 	return buf;
 }
