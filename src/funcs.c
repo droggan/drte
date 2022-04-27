@@ -564,14 +564,17 @@ cut(Editor *e) {
 
 void
 paste(Editor *e) {
-	Buffer *b = e->current_buffer;
-
 	if (e->copy_bytes_written == 0) {
 		editor_show_message(e, "No text to paste.");
 		return;
 	}
-	gbf_insert(b->gbuf, e->copy_buffer, b->position.offset);
-	b->redraw = true;
+	size_t i = 0;
+	while (i < e->copy_bytes_written) {
+		size_t s = utf8_byte_size(e->copy_buffer[i]);
+		strncpy(e->string_arg, e->copy_buffer + i, s);
+		insert(e);
+		i += s;
+	}
 }
 
 void
