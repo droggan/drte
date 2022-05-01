@@ -50,6 +50,11 @@ main(int argc, char **argv) {
 	}
 	memset(e, 0, sizeof(*e));
 
+	e->macro_info.chunk_list = chunk_list_new(4096);
+	if (e->macro_info.chunk_list == NULL) {
+		fprintf(stderr, "Out of memory\n");
+		exit(-1);
+	}
 	e->current_buffer = NULL;
 	signal(SIGCONT, sigcont_handler);
 	signal(SIGWINCH, sigwinch_handler);

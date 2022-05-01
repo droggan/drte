@@ -55,12 +55,14 @@ editor_loop_once(Editor *e) {
 	c = input_get(input);
 	e->string_arg = input;
 
-	buffer_call_userfunc(e, e->current_buffer, c);
+	UserFunc *uf = buffer_call_userfunc(e, e->current_buffer, c);
 
 	Buffer *b = e->current_buffer;
 
-	if (e->recording_macro && b->prev_func->func != macro_start_stop) {
-		macro_append(e);
+	if (e->macro_info.recording_macro && b->prev_func->func != macro_start_stop) {
+		if (uf != NULL) {
+			macro_append(e, uf, e->string_arg);
+		}
 	}
 
 	if (b->region_type == REGION_FLUID) {

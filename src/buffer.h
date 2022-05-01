@@ -99,7 +99,8 @@ void buffer_bind_key(Buffer *buf, KeyCode c, UserFunc *f);
 /// \param e The editor structure.
 /// \param buf The buffer.
 /// \param c The key.
-void buffer_call_userfunc(struct Editor *e, Buffer *buf, KeyCode c);
+/// \return The called function. This can be NULL.
+UserFunc *buffer_call_userfunc(struct Editor *e, Buffer *buf, KeyCode c);
 
 /// buffer_free frees a buffer and sets the given pointer to NULL.
 /// \param buf The buffer to free.

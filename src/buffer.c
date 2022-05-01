@@ -88,7 +88,7 @@ buffer_bind_key(Buffer *buf, KeyCode c, UserFunc *f) {
 	buf->funcs[key_to_id(c)] = f;
 }
 
-void
+UserFunc *
 buffer_call_userfunc(Editor *e, Buffer *buf, KeyCode c) {
 	UserFunc *uf = NULL;
 	if (c == KEY_VALID) {
@@ -102,6 +102,7 @@ buffer_call_userfunc(Editor *e, Buffer *buf, KeyCode c) {
 		uf->func(e);
 		buf->prev_func = uf;
 	}
+	return uf;
 }
 
 Buffer *

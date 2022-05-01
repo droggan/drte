@@ -45,7 +45,7 @@ void copy(struct Editor *e);
 void cut(struct Editor *e);
 void paste(struct Editor *e);
 void macro_start_stop(struct Editor *e);
-void macro_append(struct Editor *e);
+void macro_append(struct Editor *e, UserFunc *uf, char *arg);
 void macro_play(struct Editor *e);
 void next_buffer(struct Editor *e);
 void previous_buffer(struct Editor *e);

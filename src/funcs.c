@@ -760,30 +760,46 @@ UserFunc uf_macro_start_stop = {
 
 void
 macro_start_stop(Editor *e) {
-	if (e->recording_macro) {
+	if (e->macro_info.recording_macro) {
 		editor_show_message(e, "Stopped recording");
-		e->recording_macro = false;
-		e->macro_buffer[e->macro_bytes_written] = '\0';
+		e->macro_info.recording_macro = false;
 	} else {
 		editor_show_message(e, "Recording");
-		e->recording_macro = true;
-		e->macro_bytes_written = 0;
-		e->macro_buffer[0] = '\0';
+		e->macro_info.recording_macro = true;
+		while (e->macro_info.first != NULL) {
+			MacroElement *m = e->macro_info.first;
+			e->macro_info.first = e->macro_info.first->next;
+			free(m->text);
+			free(m);
+		}
+		e->macro_info.first = NULL;
+		e->macro_info.last = NULL;
 	}
 }
 
 
 void
-macro_append(Editor *e) {
-	size_t len = strlen(e->string_arg);
+macro_append(Editor *e, UserFunc *uf, char *arg) {
+	MacroElement *me = malloc(sizeof(*me));
 
-	strcpy(e->macro_buffer + e->macro_bytes_written, e->string_arg);
-	e->macro_buffer[e->macro_bytes_written + len] = '\0';
-	e->macro_bytes_written += len + 1;
+	if (me == NULL) {
+		editor_show_message(e, "Cannot save macro. Out of memory");
+		e->macro_info.recording_macro = false;
+		return;
+	}
+	me->uf = uf;
+	if (arg != NULL) {
+		ChunkListItem *ci = chunk_list_insert(e->macro_info.chunk_list, arg);
+		me->text = ci;
+	}
+	me->next = NULL;
 
-	if (e->macro_bytes_written > MACRO_BUFFER_SIZE - 32) {
-		editor_show_message(e, "Macro buffer full. Stopped recording.");
-		e->recording_macro = false;
+	if (e->macro_info.last == NULL) {
+		e->macro_info.first = me;
+		e->macro_info.last = me;
+	} else {
+		e->macro_info.last->next = me;
+		e->macro_info.last = me;
 	}
 }
 
@@ -796,24 +812,15 @@ UserFunc uf_macro_play = {
 
 void
 macro_play(Editor *e) {
-	size_t i = 0;
-
-	if (e->recording_macro) {
+	if (e->macro_info.recording_macro) {
 		macro_start_stop(e);
 	}
-	if (e->macro_bytes_written == 0) {
-		editor_show_message(e, "No macro recorded.");
-	}
-	while (e->macro_buffer[i] != '\0') {
-		char buffer[32] = {'\0'};
-		KeyCode c = 0;
-
-		strcpy(buffer, e->macro_buffer + i);
-		//c = input_check(buffer);
-
-		buffer_call_userfunc(e, e->current_buffer, c);
-
-		i += strlen(buffer) + 1;
+	for (MacroElement *me = e->macro_info.first; me != NULL; me = me->next) {
+		if (me->text != NULL) {
+			e->string_arg = chunk_list_get_item(me->text);
+		}
+		me->uf->func(e);
+		free(e->string_arg);
 	}
 }
 

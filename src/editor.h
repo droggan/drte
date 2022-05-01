@@ -5,7 +5,12 @@
 /// \file
 /// editor.h defines the editor structure.
 
-#define MACRO_BUFFER_SIZE 32768
+typedef struct MacroElement{
+	UserFunc *uf;
+	ChunkListItem *text;
+	struct MacroElement *next;
+} MacroElement;
+
 
 /// The editor structure.
 typedef struct Editor {
@@ -18,9 +23,12 @@ typedef struct Editor {
 	char *string_arg; ///< This is used to pass strings to functions.
 	size_t size_t_arg; ///< This is used to pass size_ts to functions.
 
-	char macro_buffer[MACRO_BUFFER_SIZE]; ///< This buffer contains the current keyboard macro.
-	size_t macro_bytes_written; ///< The number of bytes written to macro_buffer.
-	bool recording_macro; ///< True, if the editor is recording a macro.
+	struct {
+		bool recording_macro; ///< True, if the editor is recording a macro.
+		ChunkList *chunk_list; ///< A ChunkList used by macro functions.
+		MacroElement *first; ///< The first element in the macro list.
+		MacroElement *last; ///< The last element in the macro list.
+	} macro_info;
 
 	char *copy_buffer; ///< A dynamically allocated buffer, containing cut/copied text.
 	size_t copy_buffer_size; ///< The size of the copy buffer.
