@@ -10,7 +10,6 @@
 #include "display.h"
 #include "funcs.h"
 #include "gapbuffer.h"
-#include "userfuncs.h"
 #include "chunk_list.h"
 #include "menus.h"
 #include "input.h"
@@ -28,6 +27,13 @@ static void move_to_offset(Editor *e, size_t offset);
 static size_t region_size(Buffer *b);
 
 
+UserFunc uf_insert = {
+	.type = USER_FUNC_INSERTION,
+	.name = "insert",
+	.description = "",
+	.func = insert
+};
+
 void
 insert(Editor *e) {
 	Buffer *b = e->current_buffer;
@@ -37,16 +43,37 @@ insert(Editor *e) {
 	b->redraw = true;
 }
 
+UserFunc uf_newline = {
+	.type = USER_FUNC_INSERTION,
+	.name = "newline",
+	.description = "Inserts a newline at the current position.",
+	.func = newline
+};
+
 void
 newline(Editor *e) {
 	e->string_arg = "\n";
 	insert(e);
 }
 
+UserFunc uf_tab = {
+	.type = USER_FUNC_INSERTION,
+	.name = "tab",
+	.description = "Inserts a tab at the current position.",
+	.func = tab
+};
+
 void
 tab(Editor *e) {
 	insert(e);
 }
+
+UserFunc uf_delete = {
+	.type = USER_FUNC_DELETION,
+	.name = "delete",
+	.description = "Deletes the character under the cursor.",
+	.func = delete
+};
 
 void
 delete(Editor *e) {
@@ -61,6 +88,13 @@ delete(Editor *e) {
 	b->redraw = true;
 }
 
+UserFunc uf_backspace = {
+	.type = USER_FUNC_DELETION,
+	.name = "backspace",
+	.description = "Deletes the character before the cursor.",
+	.func = backspace
+};
+
 void
 backspace (Editor *e) {
 	Buffer *b = e->current_buffer;
@@ -71,6 +105,13 @@ backspace (Editor *e) {
 	left(e);
 	delete(e);
 }
+
+UserFunc uf_menu_up = {
+	.type = USER_FUNC_MOVEMENT,
+	.name = "menu_up",
+	.description = "Select the previous menu item.",
+	.func = menu_up
+};
 
 void
 menu_up(Editor *e) {
@@ -95,6 +136,13 @@ menu_up(Editor *e) {
 	}
 }
 
+UserFunc uf_menu_down = {
+	.type = USER_FUNC_MOVEMENT,
+	.name = "menu_down",
+	.description = "Select the next menu item.",
+	.func = menu_down
+};
+
 void
 menu_down(Editor *e) {
 	Buffer *b = e->current_buffer;
@@ -117,6 +165,13 @@ menu_down(Editor *e) {
 		}
 	}
 }
+
+UserFunc uf_menu_tab = {
+	.type = USER_FUNC_MOVEMENT,
+	.name = "menu_tab",
+	.description = "Cycle through matching menu items.",
+	.func = menu_tab
+};
 
 void
 menu_tab(Editor *e) {
@@ -148,6 +203,13 @@ menu_tab(Editor *e) {
 	}
 
 }
+
+UserFunc uf_toggle_show_hidden_files = {
+	.type = USER_FUNC_MANAGEMENT,
+	.name = "toggle_show_hidden_files.",
+	.description = "Show/hide hidden files.",
+	.func = toggle_show_hidden_files
+};
 
 void
 toggle_show_hidden_files(Editor *e) {
@@ -210,6 +272,13 @@ move_to_offset(Editor *e, size_t offset) {
 	}
 }
 
+UserFunc uf_left = {
+	.type = USER_FUNC_MOVEMENT,
+	.name = "left",
+	.description = "Moves the cursor backward.",
+	.func = left
+};
+
 void
 left(Editor *e) {
 	Buffer *b = e->current_buffer;
@@ -249,6 +318,13 @@ left(Editor *e) {
 	}
 }
 
+UserFunc uf_right = {
+	.type = USER_FUNC_MOVEMENT,
+	.name = "right",
+	.description = "Moves the cursor forward.",
+	.func = right
+};
+
 void
 right(Editor *e) {
 	Buffer *b = e->current_buffer;
@@ -274,6 +350,13 @@ right(Editor *e) {
 	b->position.offset += bytes;
 }
 
+UserFunc uf_up = {
+	.type = USER_FUNC_MOVEMENT,
+	.name = "up",
+	.description = "Moves the cursor up.",
+	.func = up
+};
+
 void
 up(Editor *e) {
 	Buffer *b = e->current_buffer;
@@ -288,6 +371,13 @@ up(Editor *e) {
 		left(e);
 	} while (b->position.column > b->target_column);
 }
+
+UserFunc uf_down = {
+	.type = USER_FUNC_MOVEMENT,
+	.name = "down",
+	.description = "Moves the cursor down",
+	.func = down
+};
 
 void
 down(Editor *e) {
@@ -311,6 +401,13 @@ down(Editor *e) {
 	}
 }
 
+UserFunc uf_bol = {
+	.type = USER_FUNC_MOVEMENT,
+	.name = "bol",
+	.description = "Moves the cursor to the beginning of the current line",
+	.func = bol
+};
+
 void
 bol(Editor *e) {
 	Buffer *b = e->current_buffer;
@@ -318,6 +415,13 @@ bol(Editor *e) {
 		left(e);
 	}
 }
+
+UserFunc uf_eol = {
+	.type = USER_FUNC_MOVEMENT,
+	.name = "eol",
+	.description = "Moves the cursor to the end of the current line.",
+	.func = eol
+};
 
 void
 eol(Editor *e) {
@@ -327,6 +431,13 @@ eol(Editor *e) {
 		right(e);
 	}
 }
+
+UserFunc uf_page_up = {
+	.type = USER_FUNC_MOVEMENT,
+	.name = "page_up",
+	.description = "Scrolls up by one screen.",
+	.func = page_up
+};
 
 void
 page_up(Editor *e) {
@@ -345,6 +456,13 @@ page_up(Editor *e) {
 	b->cursor.line = 0;
 	b->cursor.column = 0;
 }
+
+UserFunc uf_page_down = {
+	.type = USER_FUNC_MOVEMENT,
+	.name = "page_down",
+	.description = "Scrolls down by one screen.",
+	.func = page_down
+};
 
 void
 page_down(Editor *e) {
@@ -365,6 +483,13 @@ page_down(Editor *e) {
 	b->cursor.line = 0;
 	b->cursor.column = 0;
 }
+
+UserFunc uf_isearch = {
+	.type = USER_FUNC_MOVEMENT,
+	.name = "isearch",
+	.description = "Start searching at the current cursor position.",
+	.func = isearch
+};
 
 void
 isearch(Editor *e) {
@@ -417,6 +542,13 @@ isearch(Editor *e) {
 	e->current_buffer = tb;
 }
 
+UserFunc uf_isearch_next = {
+	.type = USER_FUNC_MOVEMENT,
+	.name = "isearch_next",
+	.description = "Go to the next result.",
+	.func = isearch_next
+};
+
 void
 isearch_next(Editor *e){
 	Buffer *b = e->current_buffer;
@@ -433,6 +565,13 @@ isearch_next(Editor *e){
 		b->isearch_direction = ISEARCH_DIRECTION_FORWARD;
 	}
 }
+
+UserFunc uf_isearch_previous = {
+	.type = USER_FUNC_MOVEMENT,
+	.name = "isearch_previous",
+	.description = "Go to the previous result.",
+	.func = isearch_previous
+};
 
 void
 isearch_previous(Editor *e) {
@@ -453,6 +592,13 @@ isearch_previous(Editor *e) {
 		b->isearch_direction = ISEARCH_DIRECTION_BACKWARD;
 	}
 }
+
+UserFunc uf_region_start_stop = {
+	.type = USER_FUNC_MANAGEMENT,
+	.name = "region_start_stop",
+	.description = "Start or stop selecting text.",
+	.func = region_start_stop
+};
 
 void
 region_start_stop(Editor *e) {
@@ -480,6 +626,13 @@ region_start_stop(Editor *e) {
 	}
 }
 
+UserFunc uf_region_off = {
+	.type = USER_FUNC_MANAGEMENT,
+	.name = "region_off",
+	.description = "Clear the current region.",
+	.func = region_off
+};
+
 void
 region_off(Editor *e) {
 	Buffer *b = e->current_buffer;
@@ -499,6 +652,13 @@ static size_t
 region_size(Buffer *b) {
 	return b->region_end - b->region_start;
 }
+
+UserFunc uf_copy = {
+	.type = USER_FUNC_MANAGEMENT,
+	.name = "copy",
+	.description = "Copy the selected text.",
+	.func = copy
+};
 
 void
 copy(Editor *e) {
@@ -539,6 +699,13 @@ copy(Editor *e) {
 	editor_show_message(e, "Copied text.");
 }
 
+UserFunc uf_cut = {
+	.type = USER_FUNC_DELETION,
+	.name = "cut",
+	.description = "Cut the selected text.",
+	.func = cut
+};
+
 void
 cut(Editor *e) {
 	Buffer *b = e->current_buffer;
@@ -562,6 +729,13 @@ cut(Editor *e) {
 	editor_show_message(e, "Cut text.");
 }
 
+UserFunc uf_paste = {
+	.type = USER_FUNC_INSERTION,
+	.name = "paste",
+	.description = "Paste previously cut/copied text.",
+	.func = paste
+};
+
 void
 paste(Editor *e) {
 	if (e->copy_bytes_written == 0) {
@@ -577,6 +751,13 @@ paste(Editor *e) {
 	}
 }
 
+UserFunc uf_macro_start_stop = {
+	.type = USER_FUNC_MANAGEMENT,
+	.name = "macro_start_stop",
+	.description = "Start or stop recording a macro.",
+	.func = macro_start_stop
+};
+
 void
 macro_start_stop(Editor *e) {
 	if (e->recording_macro) {
@@ -591,6 +772,7 @@ macro_start_stop(Editor *e) {
 	}
 }
 
+
 void
 macro_append(Editor *e) {
 	size_t len = strlen(e->string_arg);
@@ -604,6 +786,13 @@ macro_append(Editor *e) {
 		e->recording_macro = false;
 	}
 }
+
+UserFunc uf_macro_play = {
+	.type = USER_FUNC_MANAGEMENT,
+	.name = "macro_play",
+	.description = "Play a previously recorded macro.",
+	.func = macro_play
+};
 
 void
 macro_play(Editor *e) {
@@ -628,17 +817,38 @@ macro_play(Editor *e) {
 	}
 }
 
+UserFunc uf_next_buffer = {
+	.type = USER_FUNC_MANAGEMENT,
+	.name = "next_buffer",
+	.description = "Switch to the next buffer.",
+	.func = next_buffer
+};
+
 void
 next_buffer(Editor *e) {
 	e->current_buffer = e->current_buffer->next;
 	e->current_buffer->redraw = 1;
 }
 
+UserFunc uf_previous_buffer = {
+	.type = USER_FUNC_MANAGEMENT,
+	.name = "previous_buffer",
+	.description = "Switch to the previous buffer.",
+	.func = previous_buffer
+};
+
 void
 previous_buffer(Editor *e) {
 	e->current_buffer = e->current_buffer->prev;
 	e->current_buffer->redraw = 1;
 }
+
+UserFunc uf_resize = {
+	.type = USER_FUNC_MANAGEMENT,
+	.name = "resize",
+	.description = "Resize the editor.",
+	.func = resize
+};
 
 void
 resize(Editor *e) {
@@ -658,21 +868,49 @@ resize(Editor *e) {
 	}
 }
 
+UserFunc uf_suspend = {
+	.type = USER_FUNC_MANAGEMENT,
+	.name = "suspend",
+	.description = "Suspend the editor.",
+	.func = suspend
+};
+
 void
 suspend(Editor *unused) {
 	(void)unused;
 	kill(0, SIGSTOP);
 }
 
+UserFunc uf_ok = {
+	.type = USER_FUNC_MANAGEMENT,
+	.name = "ok",
+	.description = "", // TODO
+	.func = ok
+};
+
 void
 ok(Editor *e) {
 	e->current_buffer->ok = true;
 }
 
+UserFunc uf_cancel = {
+	.type = USER_FUNC_MANAGEMENT,
+	.name = "cancel",
+	.description = "", // TODO
+	.func = cancel
+};
+
 void
 cancel(Editor *e) {
 	e->current_buffer->cancel = true;
 }
+
+UserFunc uf_timeout = {
+	.type = USER_FUNC_MANAGEMENT,
+	.name = "timeout",
+	.description = "", // TODO
+	.func = timeout
+};
 
 void
 timeout(Editor *e) {
@@ -742,6 +980,13 @@ make_prefix_buffer(Editor *e) {
 	return buf;
 }
 
+UserFunc uf_prefix = {
+	.type = USER_FUNC_MANAGEMENT,
+	.name = "prefix",
+	.description = "",
+	.func = prefix
+};
+
 void
 prefix(Editor *e) {
 	char input[32] = {0};
@@ -779,6 +1024,13 @@ prefix(Editor *e) {
 	e->current_buffer->redraw = true;
 }
 
+UserFunc uf_openfile = {
+	.type = USER_FUNC_MANAGEMENT,
+	.name = "open",
+	.description = "Open a file.",
+	.func = openfile
+};
+
 void
 openfile(Editor *e) {
 	char *text = menu_choose_file(e);
@@ -794,6 +1046,13 @@ openfile(Editor *e) {
 		}
 	}
 }
+
+UserFunc uf_switch_buffer = {
+	.type = USER_FUNC_MANAGEMENT,
+	.name = "switch_buffer",
+	.description = "Switch to a different buffer.",
+	.func = switch_buffer
+};
 
 void
 switch_buffer(Editor *e) {
@@ -812,6 +1071,13 @@ switch_buffer(Editor *e) {
 		free(text);
 	}
 }
+
+UserFunc uf_save = {
+	.type = USER_FUNC_MANAGEMENT,
+	.name = "save",
+	.description = "Saves the current buffer.",
+	.func = save
+};
 
 void
 save(Editor *e) {
@@ -851,6 +1117,13 @@ save(Editor *e) {
 	fclose(fd);
 	free(text);
 }
+
+UserFunc uf_save_as = {
+	.type = USER_FUNC_MANAGEMENT,
+	.name = "Save As",
+	.description = "Save the current buffer under a different name", // TODO: better descrption
+	.func = save_as
+};
 
 void
 save_as(Editor *e) {
@@ -908,6 +1181,13 @@ save_as(Editor *e) {
 	free(text);
 }
 
+UserFunc uf_close_buffer = {
+	.type = USER_FUNC_MANAGEMENT,
+	.name = "close_buffer",
+	.description = "Close the current buffer.",
+	.func = close_buffer
+};
+
 void
 close_buffer(Editor *e) {
 	MenuResult r = false;
@@ -926,6 +1206,13 @@ close_buffer(Editor *e) {
 		quit(e);
 	}
 }
+
+UserFunc uf_quit = {
+	.type = USER_FUNC_MANAGEMENT,
+	.name = "quit",
+	.description = "Quit.",
+	.func = quit
+};
 
 void
 quit(Editor *e) {

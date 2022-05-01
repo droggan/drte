@@ -11,7 +11,6 @@
 #include "gapbuffer.h"
 #include "display.h"
 #include "input.h"
-#include "userfuncs.h"
 #include "funcs.h"
 #include "chunk_list.h"
 #include "menus.h"
